@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "fr.smeal"
-        minSdk = 24 // CameraX demande souvent min 21, 24 est safe
+        minSdk = 26 // CameraX demande souvent min 21, 24 est safe
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"

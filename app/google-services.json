@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "414528157694",
+    "project_id": "smeal-1ecbd",
+    "storage_bucket": "smeal-1ecbd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:414528157694:android:9f58a10a10cc51b32472af",
+        "android_client_info": {
+          "package_name": "fr.smeal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCq2JHmqcxFbbwgcW17kzZykDOjx7KdXg0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
