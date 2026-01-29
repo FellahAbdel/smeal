@@ -4,17 +4,17 @@ public class Restaurant {
     private String id;
     private String name;
     private String address;
-    private String photoUrl;
+    private String imageUrl;
     // Ajoute d'autres champs selon tes besoins (lat, lng, description...)
 
     // ⚠️ OBLIGATOIRE pour Firebase (Constructeur vide)
     public Restaurant() { }
 
-    public Restaurant(String id, String name, String address, String photoUrl) {
+    public Restaurant(String id, String name, String address, String imageUrl) {
         this.id = id;
         this.name = name;
         this.address = address;
-        this.photoUrl = photoUrl;
+        this.imageUrl = imageUrl;
     }
 
     // Getters et Setters (OBLIGATOIRES pour que Firebase puisse lire/écrire)
@@ -27,6 +27,6 @@ public class Restaurant {
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
 
-    public String getPhotoUrl() { return photoUrl; }
-    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }
