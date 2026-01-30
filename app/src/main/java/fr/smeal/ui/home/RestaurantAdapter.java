@@ -25,6 +25,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
     @NonNull
     @Override
+    // Crée-moi une nouvelle vue vierge (une ligne de la liste) pour en faire un objet manipulable
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemRestaurantBinding binding = ItemRestaurantBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false);
@@ -32,6 +33,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
     }
 
     @Override
+    // Prends la vue vierge à la position 'position' et y initialise les infos du restaurant
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Restaurant restaurant = restaurants.get(position);
         holder.bind(restaurant);
