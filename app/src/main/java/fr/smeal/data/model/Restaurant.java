@@ -2,6 +2,7 @@ package fr.smeal.data.model;
 
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
+import com.google.firebase.firestore.PropertyName;
 
 // Cette annotation permet à Firebase d'ignorer les champs qu'il ne connait pas (sécurité)
 @IgnoreExtraProperties
@@ -13,16 +14,16 @@ public class Restaurant {
 
     private String nom;
     private String adresse;
-    private String photoUrl; // URL de l'image (ex: une image random pour commencer)
+    private String imageUrl; // Nommé imageUrl dans Firestore
 
     // ⚠️ OBLIGATOIRE : Le constructeur vide pour Firebase
     public Restaurant() { }
 
     // Constructeur complet pour nous aider à créer des objets manuellement si besoin
-    public Restaurant(String nom, String address, String photoUrl) {
+    public Restaurant(String nom, String adresse, String imageUrl) {
         this.nom = nom;
-        this.adresse = address;
-        this.photoUrl = photoUrl;
+        this.adresse = adresse;
+        this.imageUrl = imageUrl;
     }
 
     @Exclude
@@ -35,6 +36,6 @@ public class Restaurant {
     public String getAdresse() { return adresse; }
     public void setAdresse(String adresse) { this.adresse = adresse; }
 
-    public String getPhotoUrl() { return photoUrl; }
-    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+    public String getPhotoUrl() { return imageUrl; }
+    public void setPhotoUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }
