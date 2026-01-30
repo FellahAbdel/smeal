@@ -1,19 +1,22 @@
 package fr.smeal.data.model;
 
+import com.google.firebase.firestore.DocumentId;
+
 public class Restaurant {
+    @DocumentId
     private String id;
-    private String name;
-    private String address;
+    private String nom;
+    private String adresse;
     private String imageUrl;
     // Ajoute d'autres champs selon tes besoins (lat, lng, description...)
 
     // ⚠️ OBLIGATOIRE pour Firebase (Constructeur vide)
     public Restaurant() { }
 
-    public Restaurant(String id, String name, String address, String imageUrl) {
+    public Restaurant(String id, String nom, String adresse, String imageUrl) {
         this.id = id;
-        this.name = name;
-        this.address = address;
+        this.nom = nom;
+        this.adresse = adresse;
         this.imageUrl = imageUrl;
     }
 
@@ -21,11 +24,11 @@ public class Restaurant {
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
 
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
+    public String getAdresse() { return adresse; }
+    public void setAdresse(String adresse) { this.adresse = adresse; }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }

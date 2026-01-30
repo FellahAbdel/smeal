@@ -1,6 +1,9 @@
 package fr.smeal.data.model;
 
+import com.google.firebase.firestore.DocumentId;
+
 public class Utilisateur {
+    @DocumentId
     private String id;
     private String nom;
     private String prenom;

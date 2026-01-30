@@ -1,8 +1,12 @@
 package fr.smeal.data.model;
 
+import com.google.firebase.firestore.DocumentId;
+
 public class Menu {
+    @DocumentId
     private String id;
     private String idRestaurant;
+    private String nomRestaurant;
     private String nom;
     private String entree;
     private String plat;
@@ -13,9 +17,10 @@ public class Menu {
 
     public Menu() { }
 
-    public Menu(String id, String idRestaurant, String nom, String entree, String plat, String dessert, String sauce, double prix, String imageUrl) {
+    public Menu(String id, String idRestaurant, String nomRestaurant, String nom, String entree, String plat, String dessert, String sauce, double prix, String imageUrl) {
         this.id = id;
         this.idRestaurant = idRestaurant;
+        this.nomRestaurant = nomRestaurant;
         this.nom = nom;
         this.entree = entree;
         this.plat = plat;
@@ -29,6 +34,8 @@ public class Menu {
     public void setId(String id) { this.id = id; }
     public String getIdRestaurant() { return idRestaurant; }
     public void setIdRestaurant(String idRestaurant) { this.idRestaurant = idRestaurant; }
+    public String getNomRestaurant() { return nomRestaurant; }
+    public void setNomRestaurant(String nomRestaurant) { this.nomRestaurant = nomRestaurant; }
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
     public String getEntree() { return entree; }
