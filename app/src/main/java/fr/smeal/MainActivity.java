@@ -1,7 +1,10 @@
 package fr.smeal;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 import fr.smeal.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -15,7 +18,12 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Pas besoin de plus de code pour l'instant,
-        // le FragmentContainerView dans le XML gère tout tout seul !
+        // Configuration de la navigation avec le BottomNavigationView
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+        if (navHostFragment != null) {
+            NavController navController = navHostFragment.getNavController();
+            NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
+        }
     }
 }

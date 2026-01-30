@@ -8,7 +8,13 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="fr.smeal.ui.home.HomeFragment"
-        android:label="Liste des Restaurants"
+        android:label="Smeal"
         tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="fr.smeal.ui.map.MapFragment"
+        android:label="Carte"
+        tools:layout="@layout/fragment_map" />
 
 </navigation>
