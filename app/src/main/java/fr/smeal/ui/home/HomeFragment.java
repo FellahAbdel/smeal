@@ -18,14 +18,14 @@ import fr.smeal.databinding.FragmentHomeBinding;
 public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
-    private FragmentHomeBinding binding;
+    private FragmentHomeBinding fragmentHomeBinding;
     private HomeViewModel viewModel;
     private RestaurantAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+        fragmentHomeBinding = FragmentHomeBinding.inflate(inflater, container, false);
+        return fragmentHomeBinding.getRoot();
     }
 
     @Override
@@ -33,21 +33,21 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // 1. Configuration du RecyclerView
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        fragmentHomeBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new RestaurantAdapter();
-        binding.recyclerView.setAdapter(adapter);
+        fragmentHomeBinding.recyclerView.setAdapter(adapter);
 
         // 2. Initialisation du ViewModel
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         // 3. Afficher la ProgressBar au début
-        binding.progressBar.setVisibility(View.VISIBLE);
+        fragmentHomeBinding.progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "Démarrage du chargement des restaurants...");
 
         // 4. Observation des données
         viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
             Log.d(TAG, "Données reçues: " + (restaurants != null ? restaurants.size() : "null") + " items");
-            binding.progressBar.setVisibility(View.GONE);
+            fragmentHomeBinding.progressBar.setVisibility(View.GONE);
             if (restaurants != null && !restaurants.isEmpty()) {
                 adapter.setRestaurants(restaurants);
             } else {
@@ -58,7 +58,7 @@ public class HomeFragment extends Fragment {
         // 5. Observation des erreurs
         viewModel.getError().observe(getViewLifecycleOwner(), errorMessage -> {
             Log.e(TAG, "Erreur reçue: " + errorMessage);
-            binding.progressBar.setVisibility(View.GONE);
+            fragmentHomeBinding.progressBar.setVisibility(View.GONE);
             Toast.makeText(getContext(), "Erreur : " + errorMessage, Toast.LENGTH_LONG).show();
         });
     }
