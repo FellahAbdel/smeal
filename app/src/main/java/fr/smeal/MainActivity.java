@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,3 +22,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
+
+
+//
+//// Dans ton Activity ou ViewModel
+//
+//// 1. Initialisation
+//        UtilisateurService userService = new UtilisateurService();
+//
+//// DONNÉES DE TEST
+//        String monAuthId = "user_auth_12345"; // Simule l'ID venant de Firebase Auth
+//        Utilisateur nouveauUser = new Utilisateur(null, "Dupont", "Marie", "marie@test.com", "Paris");
+//
+//// 2. Appel du Service
+//        userService.creerProfilUtilisateur(monAuthId, nouveauUser)
+//                .addOnSuccessListener(aVoid -> {
+//                    // Succès : Mise à jour de l'UI
+//                    System.out.println("Profil créé avec succès via le Service !");
+//                })
+//                .addOnFailureListener(e -> {
+//                    // Erreur : Afficher un Toast ou une alerte
+//                    System.out.println("Erreur métier ou technique : " + e.getMessage());
+//                });
