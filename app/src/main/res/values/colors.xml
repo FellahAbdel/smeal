@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="glass_bg">#4DFFFFFF</color> <!-- Blanc transparent -->
+    <color name="glass_border">#80FFFFFF</color> <!-- Bordure plus visible -->
+    <color name="liquid_primary">#FF6B6B</color> <!-- Corail pour le côté "liquid" -->
+    <color name="bg_gradient_start">#FFF5F5</color>
+    <color name="bg_gradient_end">#FFE0E0</color>
 </resources>

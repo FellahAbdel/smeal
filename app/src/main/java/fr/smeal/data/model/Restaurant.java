@@ -1,32 +1,40 @@
 package fr.smeal.data.model;
 
-public class Restaurant {
-    private String id;
-    private String name;
-    private String address;
-    private String photoUrl;
-    // Ajoute d'autres champs selon tes besoins (lat, lng, description...)
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
-    // ⚠️ OBLIGATOIRE pour Firebase (Constructeur vide)
+// Cette annotation permet à Firebase d'ignorer les champs qu'il ne connait pas (sécurité)
+@IgnoreExtraProperties
+public class Restaurant {
+
+    // On exclut l'ID de la sauvegarde interne de l'objet JSON car c'est la clé du document
+    @Exclude
+    private String id;
+
+    private String nom;
+    private String adresse;
+    private String imageUrl; // Nommé imageUrl dans Firestore
+
+    // ⚠️ OBLIGATOIRE : Le constructeur vide pour Firebase
     public Restaurant() { }
 
-    public Restaurant(String id, String name, String address, String photoUrl) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.photoUrl = photoUrl;
+    // Constructeur complet pour nous aider à créer des objets manuellement si besoin
+    public Restaurant(String nom, String adresse, String imageUrl) {
+        this.nom = nom;
+        this.adresse = adresse;
+        this.imageUrl = imageUrl;
     }
 
-    // Getters et Setters (OBLIGATOIRES pour que Firebase puisse lire/écrire)
+    @Exclude
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
 
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
+    public String getAdresse() { return adresse; }
+    public void setAdresse(String adresse) { this.adresse = adresse; }
 
-    public String getPhotoUrl() { return photoUrl; }
-    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+    public String getImageUrl() { return imageUrl; }
+    public void setPhotoUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }
