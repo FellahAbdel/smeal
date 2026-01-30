@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8F9FA">
 
     <!-- HEADER (Liquid Glass Style with Search) -->
+
+    <!-- MAIN CONTENT -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/glass_background"
         android:elevation="4dp"
         android:paddingHorizontal="16dp"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp">
 
         <!-- TITLE MODE -->
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/logo"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@mipmap/ic_launcher"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/logo_smeal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/CircleImage" />
 
+        <!-- On cache le TextView car le logo contient déjà le nom -->
         <TextView
             android:id="@+id/tvAppName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="Smeal"
-            android:textColor="#2D3436"
-            android:textSize="22sp"
-            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            android:text=""
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/logo"
             app:layout_constraintTop_toTopOf="parent" />
@@ -50,13 +55,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="#2D3436" />
 
-        <!-- SEARCH MODE (Hidden by default) -->
+        <!-- SEARCH MODE -->
         <ImageView
             android:id="@+id/btnBackSearch"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:visibility="gone"
             android:src="@android:drawable/ic_menu_revert"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -90,7 +95,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- MAIN CONTENT -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"

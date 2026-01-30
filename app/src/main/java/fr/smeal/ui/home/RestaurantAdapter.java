@@ -43,23 +43,23 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private final ItemRestaurantBinding binding;
+        private final ItemRestaurantBinding itemRestaurantBinding;
 
-        public ViewHolder(ItemRestaurantBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
+        public ViewHolder(ItemRestaurantBinding itemRestaurantBinding) {
+            super(itemRestaurantBinding.getRoot());
+            this.itemRestaurantBinding = itemRestaurantBinding;
         }
 
         public void bind(Restaurant restaurant) {
-            binding.tvNom.setText(restaurant.getNom());
-            binding.tvAdresse.setText(restaurant.getAdresse());
+            itemRestaurantBinding.tvNom.setText(restaurant.getNom());
+            itemRestaurantBinding.tvAdresse.setText(restaurant.getAdresse());
 
             // Chargement de l'image avec Glide en utilisant le nouveau champ getImageUrl()
             if (restaurant.getImageUrl() != null && !restaurant.getImageUrl().isEmpty()) {
-                Glide.with(binding.getRoot().getContext())
+                Glide.with(itemRestaurantBinding.getRoot().getContext())
                         .load(restaurant.getImageUrl())
                         .centerCrop()
-                        .into(binding.ivRestaurant);
+                        .into(itemRestaurantBinding.ivRestaurant);
             }
         }
     }
