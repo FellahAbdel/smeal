@@ -55,9 +55,9 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
             binding.tvAdresse.setText(restaurant.getAdresse());
 
             // Chargement de l'image avec Glide en utilisant le nouveau champ getImageUrl()
-            if (restaurant.getPhotoUrl() != null && !restaurant.getPhotoUrl().isEmpty()) {
+            if (restaurant.getImageUrl() != null && !restaurant.getImageUrl().isEmpty()) {
                 Glide.with(binding.getRoot().getContext())
-                        .load(restaurant.getPhotoUrl())
+                        .load(restaurant.getImageUrl())
                         .centerCrop()
                         .into(binding.ivRestaurant);
             }

@@ -2,7 +2,6 @@ package fr.smeal.data.model;
 
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
-import com.google.firebase.firestore.PropertyName;
 
 // Cette annotation permet à Firebase d'ignorer les champs qu'il ne connait pas (sécurité)
 @IgnoreExtraProperties
@@ -36,6 +35,6 @@ public class Restaurant {
     public String getAdresse() { return adresse; }
     public void setAdresse(String adresse) { this.adresse = adresse; }
 
-    public String getPhotoUrl() { return imageUrl; }
+    public String getImageUrl() { return imageUrl; }
     public void setPhotoUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }
