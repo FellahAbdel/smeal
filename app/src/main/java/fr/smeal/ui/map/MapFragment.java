@@ -74,6 +74,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
+        // 1. Clic sur un point (dot) -> Affiche la grande card de sélection rapide
         mMap.setOnMarkerClickListener(marker -> {
             Restaurant r = markerRestaurantMap.get(marker);
             if (r != null) {
@@ -82,29 +83,45 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             return false;
         });
 
+        // 2. Clic sur le fond de la carte -> Masque le détail et remet la liste horizontale
         mMap.setOnMapClickListener(latLng -> {
             binding.layoutSelectedRestaurantContainer.setVisibility(View.GONE);
             binding.rvRestaurantsMap.setVisibility(View.VISIBLE);
         });
 
+        // 3. Observation des restaurants
         viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
-            if (restaurants != null) {
+            if (restaurants != null && !restaurants.isEmpty()) {
                 mMap.clear();
                 markerRestaurantMap.clear();
                 adapter.setRestaurants(restaurants);
 
                 BitmapDescriptor dotIcon = bitmapDescriptorFromVector(getContext(), R.drawable.ic_map_pin);
+                LatLng firstRestaurantPos = null;
 
                 for (Restaurant r : restaurants) {
                     if (r.getLatitude() != 0 && r.getLongitude() != 0) {
                         LatLng pos = new LatLng(r.getLatitude(), r.getLongitude());
+                        
+                        // Ajout du marqueur personnalisé (point corail)
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(pos)
                                 .icon(dotIcon)
                                 .anchor(0.5f, 0.5f)
                                 .title(r.getNom()));
+                        
                         markerRestaurantMap.put(marker, r);
+
+                        // Capture de la position du premier restaurant pour le zoom initial
+                        if (firstRestaurantPos == null) {
+                            firstRestaurantPos = pos;
+                        }
                     }
+                }
+
+                // Zoom automatique sur le premier restaurant au chargement
+                if (firstRestaurantPos != null) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstRestaurantPos, 12f));
                 }
             }
         });
@@ -121,7 +138,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Glide.with(this).load(r.getImageUrl()).centerCrop().into(binding.layoutSelectedRestaurant.ivRestaurant);
         }
 
-        // Ajout du clic sur la grande card pour aller aux détails
         binding.layoutSelectedRestaurantContainer.setOnClickListener(v -> {
             navigateToDetails(r);
         });
