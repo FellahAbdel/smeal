@@ -14,15 +14,19 @@ public class Restaurant {
     private String nom;
     private String adresse;
     private String imageUrl; // Nommé imageUrl dans Firestore
+    private double latitude;
+    private double longitude;
 
     // ⚠️ OBLIGATOIRE : Le constructeur vide pour Firebase
     public Restaurant() { }
 
     // Constructeur complet pour nous aider à créer des objets manuellement si besoin
-    public Restaurant(String nom, String adresse, String imageUrl) {
+    public Restaurant(String nom, String adresse, String imageUrl, double latitude, double longitude) {
         this.nom = nom;
         this.adresse = adresse;
         this.imageUrl = imageUrl;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     @Exclude
@@ -36,5 +40,11 @@ public class Restaurant {
     public void setAdresse(String adresse) { this.adresse = adresse; }
 
     public String getImageUrl() { return imageUrl; }
-    public void setPhotoUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public double getLatitude() { return latitude; }
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+
+    public double getLongitude() { return longitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
 }

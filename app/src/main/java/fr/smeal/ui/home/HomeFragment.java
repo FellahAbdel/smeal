@@ -11,8 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import fr.smeal.R;
 import fr.smeal.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
@@ -36,6 +38,13 @@ public class HomeFragment extends Fragment {
         fragmentHomeBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new RestaurantAdapter();
         fragmentHomeBinding.recyclerView.setAdapter(adapter);
+
+        // Configuration du clic sur un restaurant pour aller vers les détails
+        adapter.setOnRestaurantClickListener(restaurant -> {
+            Bundle args = new Bundle();
+            args.putString("restaurantId", restaurant.getId());
+            Navigation.findNavController(view).navigate(R.id.detailsFragment, args);
+        });
 
         // 2. Initialisation du ViewModel
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
