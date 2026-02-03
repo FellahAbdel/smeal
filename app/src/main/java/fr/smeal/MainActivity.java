@@ -7,10 +7,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
+
 import fr.smeal.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
                 .findFragmentById(R.id.nav_host_fragment);
         if (navHostFragment != null) {
             NavController navController = navHostFragment.getNavController();
+            // Liaison avec la BottomNavigationView (à l'intérieur du container)
             NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
         }
     }
@@ -46,11 +49,12 @@ public class MainActivity extends AppCompatActivity {
             int screenHeight = binding.getRoot().getRootView().getHeight();
             int keypadHeight = screenHeight - r.bottom;
 
+            // On masque le CONTAINER (le verre) et pas juste la navigation
             if (keypadHeight > screenHeight * 0.15) {
-                binding.bottomNavigation.setVisibility(View.GONE);
+                binding.bottomNavContainer.setVisibility(View.GONE);
             } else {
                 if (!isSearching) {
-                    binding.bottomNavigation.setVisibility(View.VISIBLE);
+                    binding.bottomNavContainer.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -70,13 +74,17 @@ public class MainActivity extends AppCompatActivity {
 
         binding.etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 binding.btnClearSearch.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
             }
+
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
@@ -86,7 +94,8 @@ public class MainActivity extends AppCompatActivity {
             binding.logo.setVisibility(View.GONE);
             binding.tvAppName.setVisibility(View.GONE);
             binding.btnSearch.setVisibility(View.GONE);
-            binding.bottomNavigation.setVisibility(View.GONE);
+            // On masque le bloc de navigation complet
+            binding.bottomNavContainer.setVisibility(View.GONE);
 
             binding.btnBackSearch.setVisibility(View.VISIBLE);
             binding.etSearch.setVisibility(View.VISIBLE);
@@ -96,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             binding.logo.setVisibility(View.VISIBLE);
             binding.tvAppName.setVisibility(View.VISIBLE);
             binding.btnSearch.setVisibility(View.VISIBLE);
-            binding.bottomNavigation.setVisibility(View.VISIBLE);
+            binding.bottomNavContainer.setVisibility(View.VISIBLE);
 
             binding.btnBackSearch.setVisibility(View.GONE);
             binding.etSearch.setVisibility(View.GONE);
