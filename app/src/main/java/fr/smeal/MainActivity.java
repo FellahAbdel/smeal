@@ -39,6 +39,20 @@ public class MainActivity extends AppCompatActivity {
             NavController navController = navHostFragment.getNavController();
             // Liaison avec la BottomNavigationView (à l'intérieur du container)
             NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
+
+            // Gestion de la visibilité du header et footer selon la destination
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                if (destination.getId() == R.id.detailsFragment) {
+                    binding.header.setVisibility(View.GONE);
+                    binding.bottomNavContainer.setVisibility(View.GONE);
+                } else {
+                    binding.header.setVisibility(View.VISIBLE);
+                    // On affiche le footer uniquement si on n'est pas en mode recherche
+                    if (!isSearching) {
+                        binding.bottomNavContainer.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
         }
     }
 
@@ -53,8 +67,16 @@ public class MainActivity extends AppCompatActivity {
             if (keypadHeight > screenHeight * 0.15) {
                 binding.bottomNavContainer.setVisibility(View.GONE);
             } else {
-                if (!isSearching) {
-                    binding.bottomNavContainer.setVisibility(View.VISIBLE);
+                // On ne réaffiche le menu que si on n'est pas en mode recherche 
+                // ET qu'on n'est pas sur la page de détails
+                NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                if (navHostFragment != null) {
+                    NavController navController = navHostFragment.getNavController();
+                    if (navController.getCurrentDestination() != null && 
+                        navController.getCurrentDestination().getId() != R.id.detailsFragment && 
+                        !isSearching) {
+                        binding.bottomNavContainer.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         });

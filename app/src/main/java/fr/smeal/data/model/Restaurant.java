@@ -3,30 +3,30 @@ package fr.smeal.data.model;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
-// Cette annotation permet à Firebase d'ignorer les champs qu'il ne connait pas (sécurité)
 @IgnoreExtraProperties
 public class Restaurant {
 
-    // On exclut l'ID de la sauvegarde interne de l'objet JSON car c'est la clé du document
     @Exclude
     private String id;
 
     private String nom;
     private String adresse;
-    private String imageUrl; // Nommé imageUrl dans Firestore
+    private String imageUrl;
     private double latitude;
     private double longitude;
+    private String cuisineType; // Nouveau champ
+    private double rating;      // Note moyenne
 
-    // ⚠️ OBLIGATOIRE : Le constructeur vide pour Firebase
     public Restaurant() { }
 
-    // Constructeur complet pour nous aider à créer des objets manuellement si besoin
-    public Restaurant(String nom, String adresse, String imageUrl, double latitude, double longitude) {
+    public Restaurant(String nom, String adresse, String imageUrl, double latitude, double longitude, String cuisineType, double rating) {
         this.nom = nom;
         this.adresse = adresse;
         this.imageUrl = imageUrl;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.cuisineType = cuisineType;
+        this.rating = rating;
     }
 
     @Exclude
@@ -47,4 +47,10 @@ public class Restaurant {
 
     public double getLongitude() { return longitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
+
+    public String getCuisineType() { return cuisineType; }
+    public void setCuisineType(String cuisineType) { this.cuisineType = cuisineType; }
+
+    public double getRating() { return rating; }
+    public void setRating(double rating) { this.rating = rating; }
 }
