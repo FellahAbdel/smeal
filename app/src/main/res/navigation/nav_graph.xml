@@ -17,4 +17,14 @@
         android:label="Carte"
         tools:layout="@layout/fragment_map" />
 
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="fr.smeal.ui.details.DetailsFragment"
+        android:label="Détails"
+        tools:layout="@layout/fragment_details">
+        <argument
+            android:name="restaurantId"
+            app:argType="string" />
+    </fragment>
+
 </navigation>
