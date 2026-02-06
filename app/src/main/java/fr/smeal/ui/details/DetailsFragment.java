@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,10 +13,17 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
+import java.util.List;
+
+import fr.smeal.data.model.Avis;
 import fr.smeal.data.model.Restaurant;
+import fr.smeal.data.repository.RestaurantRepository;
+import fr.smeal.databinding.DialogAddAvisBinding;
 import fr.smeal.databinding.FragmentDetailsBinding;
 import fr.smeal.ui.home.HomeViewModel;
+import fr.smeal.utils.FirestoreCallback;
 
 public class DetailsFragment extends Fragment {
 
@@ -23,6 +31,7 @@ public class DetailsFragment extends Fragment {
     private HomeViewModel viewModel;
     private MenuAdapter menuAdapter;
     private AvisAdapter avisAdapter;
+    private String currentRestaurantId;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,12 +48,12 @@ public class DetailsFragment extends Fragment {
         setupRecyclerViews();
 
         if (getArguments() != null) {
-            String restaurantId = getArguments().getString("restaurantId");
+            currentRestaurantId = getArguments().getString("restaurantId");
             
             // 1. Charger les infos du resto
             viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
                 for (Restaurant r : restaurants) {
-                    if (r.getId().equals(restaurantId)) {
+                    if (r.getId().equals(currentRestaurantId)) {
                         displayRestaurant(r);
                         break;
                     }
@@ -52,8 +61,8 @@ public class DetailsFragment extends Fragment {
             });
 
             // 2. Charger Menus et Avis spécifiquement pour ce resto
-            viewModel.loadMenus(restaurantId);
-            viewModel.loadAvis(restaurantId);
+            viewModel.loadMenus(currentRestaurantId);
+            viewModel.loadAvis(currentRestaurantId);
         }
 
         // Observation des Menus
@@ -66,16 +75,17 @@ public class DetailsFragment extends Fragment {
             avisAdapter.setAvisList(avisList);
         });
 
+        // Clic pour donner un avis
+        binding.btnDonnerAvis.setOnClickListener(v -> showAddAvisDialog());
+
         binding.toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
     }
 
     private void setupRecyclerViews() {
-        // Horizontale pour les menus
         menuAdapter = new MenuAdapter();
         binding.rvMenus.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.rvMenus.setAdapter(menuAdapter);
 
-        // Verticale pour les avis
         avisAdapter = new AvisAdapter();
         binding.rvAvis.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvAvis.setAdapter(avisAdapter);
@@ -90,5 +100,47 @@ public class DetailsFragment extends Fragment {
         if (r.getImageUrl() != null && !r.getImageUrl().isEmpty()) {
             Glide.with(this).load(r.getImageUrl()).centerCrop().into(binding.ivDetails);
         }
+    }
+
+    private void showAddAvisDialog() {
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        DialogAddAvisBinding dialogBinding = DialogAddAvisBinding.inflate(getLayoutInflater());
+        dialog.setContentView(dialogBinding.getRoot());
+
+        dialogBinding.btnSubmitAvis.setOnClickListener(v -> {
+            String titre = dialogBinding.etTitreAvis.getText().toString().trim();
+            String desc = dialogBinding.etDescAvis.getText().toString().trim();
+            int note = (int) dialogBinding.rbAvis.getRating();
+
+            if (titre.isEmpty() || desc.isEmpty() || note == 0) {
+                Toast.makeText(getContext(), "Merci de remplir tous les champs", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Création de l'objet Avis (infos utilisateurs factices pour l'instant)
+            Avis avis = new Avis();
+            avis.setIdRestaurant(currentRestaurantId);
+            avis.setTitre(titre);
+            avis.setDescription(desc);
+            avis.setNote(note);
+            avis.setPrenomUtilisateur("Utilisateur");
+            avis.setNomUtilisateur("Smeal");
+
+            RestaurantRepository.getInstance().addAvis(avis, new FirestoreCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    Toast.makeText(getContext(), "Avis publié !", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    viewModel.loadAvis(currentRestaurantId); // Recharger les avis
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(getContext(), "Erreur : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        dialog.show();
     }
 }
