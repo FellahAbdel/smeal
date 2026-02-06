@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
@@ -17,6 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.List;
 
+import fr.smeal.R;
 import fr.smeal.data.model.Avis;
 import fr.smeal.data.model.Restaurant;
 import fr.smeal.data.repository.RestaurantRepository;
@@ -106,6 +108,12 @@ public class DetailsFragment extends Fragment {
         BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
         DialogAddAvisBinding dialogBinding = DialogAddAvisBinding.inflate(getLayoutInflater());
         dialog.setContentView(dialogBinding.getRoot());
+
+        // LIEN AVEC LA CAMERA
+        dialogBinding.btnAddPhoto.setOnClickListener(v -> {
+            dialog.dismiss(); // Fermer le formulaire pour ouvrir la caméra
+            Navigation.findNavController(requireView()).navigate(R.id.action_detailsFragment_to_cameraFragment);
+        });
 
         dialogBinding.btnSubmitAvis.setOnClickListener(v -> {
             String titre = dialogBinding.etTitreAvis.getText().toString().trim();
