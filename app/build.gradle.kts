@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
@@ -17,6 +19,24 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        //load the values from .properties file
+        val keystoreFile = project.rootProject.file("local.properties")
+        val properties = Properties()
+        if (keystoreFile.exists()) {
+            properties.load(keystoreFile.inputStream())
+        }
+
+        //return empty key in case something goes wrong
+        val apiKey = properties.getProperty("API_KEY") ?: ""
+
+        buildConfigField(
+            type = "String",
+            name = "API_KEY",
+            value = "\"$apiKey\""
+        )
+
+        manifestPlaceholders["API_KEY"] = apiKey
     }
 
     buildTypes {
@@ -36,6 +56,7 @@ android {
     // AJOUT IMPORTANT POUR LE PROJET
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
