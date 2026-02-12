@@ -1,20 +1,16 @@
-package fr.smeal.ui.home;
+package fr.smeal.ui.map;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import fr.smeal.data.model.Restaurant;
-import fr.smeal.databinding.ItemRestaurantBinding;
+import fr.smeal.databinding.ItemRestaurantMapBinding;
 
-public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.ViewHolder> {
+public class MapRestaurantAdapter extends RecyclerView.Adapter<MapRestaurantAdapter.ViewHolder> {
 
     private List<Restaurant> restaurants = new ArrayList<>();
     private OnRestaurantClickListener listener;
@@ -23,19 +19,19 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
         void onRestaurantClick(Restaurant restaurant);
     }
 
-    public void setOnRestaurantClickListener(OnRestaurantClickListener listener) {
-        this.listener = listener;
-    }
-
     public void setRestaurants(List<Restaurant> restaurants) {
         this.restaurants = restaurants;
         notifyDataSetChanged();
     }
 
+    public void setOnRestaurantClickListener(OnRestaurantClickListener listener) {
+        this.listener = listener;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemRestaurantBinding binding = ItemRestaurantBinding.inflate(
+        ItemRestaurantMapBinding binding = ItemRestaurantMapBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false);
         return new ViewHolder(binding);
     }
@@ -43,7 +39,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Restaurant restaurant = restaurants.get(position);
-        holder.bind(restaurant, listener);
+        holder.bind(restaurant);
     }
 
     @Override
@@ -51,30 +47,25 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
         return restaurants.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        private final ItemRestaurantBinding itemRestaurantBinding;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        private final ItemRestaurantMapBinding binding;
 
-        public ViewHolder(ItemRestaurantBinding itemRestaurantBinding) {
-            super(itemRestaurantBinding.getRoot());
-            this.itemRestaurantBinding = itemRestaurantBinding;
+        public ViewHolder(ItemRestaurantMapBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            itemView.setOnClickListener(v -> {
+                if (listener != null) listener.onRestaurantClick(restaurants.get(getAdapterPosition()));
+            });
         }
 
-        public void bind(Restaurant restaurant, OnRestaurantClickListener listener) {
-            itemRestaurantBinding.tvNom.setText(restaurant.getNom());
-            itemRestaurantBinding.tvAdresse.setText(restaurant.getAdresse());
-
+        public void bind(Restaurant restaurant) {
+            binding.tvNomMap.setText(restaurant.getNom());
             if (restaurant.getImageUrl() != null && !restaurant.getImageUrl().isEmpty()) {
-                Glide.with(itemRestaurantBinding.getRoot().getContext())
+                Glide.with(binding.getRoot().getContext())
                         .load(restaurant.getImageUrl())
                         .centerCrop()
-                        .into(itemRestaurantBinding.ivRestaurant);
+                        .into(binding.ivRestaurantMap);
             }
-
-            itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onRestaurantClick(restaurant);
-                }
-            });
         }
     }
 }
