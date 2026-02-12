@@ -42,7 +42,17 @@ public class HomeFragment extends Fragment {
         // Configuration du clic sur un restaurant pour aller vers les détails
         adapter.setOnRestaurantClickListener(restaurant -> {
             Bundle args = new Bundle();
+
+            // On passe l'ID pour charger les menus/avis
             args.putString("restaurantId", restaurant.getId());
+
+            // On passe les infos d'affichage pour un rendu immédiat
+            args.putString("nom", restaurant.getNom());
+            args.putString("adresse", restaurant.getAdresse());
+            args.putString("imageUrl", restaurant.getImageUrl());
+            args.putString("cuisine", restaurant.getCuisineType());
+            args.putDouble("rating", restaurant.getRating());
+
             Navigation.findNavController(view).navigate(R.id.detailsFragment, args);
         });
 
