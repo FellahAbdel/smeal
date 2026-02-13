@@ -34,6 +34,20 @@
         android:id="@+id/cameraFragment"
         android:name="fr.smeal.ui.camera.CameraFragment"
         android:label="Prendre une photo"
-        tools:layout="@layout/fragment_camera" />
+        tools:layout="@layout/fragment_camera">
+        <action
+            android:id="@+id/action_cameraFragment_to_imageEditFragment"
+            app:destination="@id/imageEditFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/imageEditFragment"
+        android:name="fr.smeal.ui.camera.ImageEditFragment"
+        android:label="Retoucher la photo"
+        tools:layout="@layout/fragment_image_edit">
+        <argument
+            android:name="imageUri"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

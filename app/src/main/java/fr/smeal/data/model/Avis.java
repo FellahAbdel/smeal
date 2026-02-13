@@ -1,8 +1,10 @@
 package fr.smeal.data.model;
 
-import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @IgnoreExtraProperties
 public class Avis {
@@ -13,20 +15,22 @@ public class Avis {
     private String prenomUtilisateur;
     private String titre;
     private String description;
-    private String imageUrl;
+    private List<String> imageUrls = new ArrayList<>(); // Liste d'URLs pour plusieurs photos
     private int note;
+    private double latitude;  // Pour la géolocalisation de l'avis/photo
+    private double longitude;
 
     public Avis() {
     }
 
-    public Avis(String id, String idRestaurant, String nomUtilisateur, String prenomUtilisateur, String titre, String description, String imageUrl, int note) {
+    public Avis(String id, String idRestaurant, String nomUtilisateur, String prenomUtilisateur, String titre, String description, List<String> imageUrls, int note) {
         this.id = id;
         this.idRestaurant = idRestaurant;
         this.nomUtilisateur = nomUtilisateur;
         this.prenomUtilisateur = prenomUtilisateur;
         this.titre = titre;
         this.description = description;
-        this.imageUrl = imageUrl;
+        this.imageUrls = imageUrls;
         this.note = note;
     }
 
@@ -78,12 +82,12 @@ public class Avis {
         this.description = description;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public List<String> getImageUrls() {
+        return imageUrls;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
     public int getNote() {
@@ -92,5 +96,21 @@ public class Avis {
 
     public void setNote(int note) {
         this.note = note;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

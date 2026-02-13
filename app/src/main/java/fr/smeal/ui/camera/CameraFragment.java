@@ -114,10 +114,10 @@ public class CameraFragment extends Fragment {
                         Uri savedUri = Uri.fromFile(photoFile);
                         Log.d(TAG, "Photo sauvegardée : " + savedUri);
                         
-                        // Prochaine étape : Naviguer vers le fragment de retouche
-                        // Pour l'instant on retourne à l'avis (on simulera la suite après)
-                        Toast.makeText(getContext(), "Photo prise !", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(requireView()).navigateUp();
+                        // Navigation vers l'éditeur avec l'URI de la photo
+                        Bundle args = new Bundle();
+                        args.putString("imageUri", savedUri.toString());
+                        Navigation.findNavController(requireView()).navigate(R.id.action_cameraFragment_to_imageEditFragment, args);
                     }
 
                     @Override

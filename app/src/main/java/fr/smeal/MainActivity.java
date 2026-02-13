@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
             // Gestion de la visibilité du header et footer selon la destination
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int id = destination.getId();
-                // Masquer pour les détails ET la caméra
-                if (id == R.id.detailsFragment || id == R.id.cameraFragment) {
+                // Masquer pour les détails, la caméra ET l'édition d'image
+                if (id == R.id.detailsFragment || id == R.id.cameraFragment || id == R.id.imageEditFragment) {
                     binding.header.setVisibility(View.GONE);
                     binding.bottomNavContainer.setVisibility(View.GONE);
                 } else {
@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
                     NavController navController = navHostFragment.getNavController();
                     if (navController.getCurrentDestination() != null) {
                         int id = navController.getCurrentDestination().getId();
-                        // Ne pas réafficher si on est sur détails, caméra ou en recherche
-                        if (id != R.id.detailsFragment && id != R.id.cameraFragment && !isSearching) {
+                        // Ne pas réafficher si on est sur détails, caméra, édition ou en recherche
+                        if (id != R.id.detailsFragment && id != R.id.cameraFragment && id != R.id.imageEditFragment && !isSearching) {
                             binding.bottomNavContainer.setVisibility(View.VISIBLE);
                         }
                     }

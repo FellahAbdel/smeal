@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.smeal.R;
@@ -34,6 +35,9 @@ public class DetailsFragment extends Fragment {
     private MenuAdapter menuAdapter;
     private AvisAdapter avisAdapter;
     private String currentRestaurantId;
+    
+    // Liste locale pour stocker les photos prises durant la session de rédaction de l'avis
+    private List<String> sessionImageUrls = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,7 +56,6 @@ public class DetailsFragment extends Fragment {
         if (getArguments() != null) {
             currentRestaurantId = getArguments().getString("restaurantId");
             
-            // 1. Charger les infos du resto
             viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
                 for (Restaurant r : restaurants) {
                     if (r.getId().equals(currentRestaurantId)) {
@@ -62,24 +65,24 @@ public class DetailsFragment extends Fragment {
                 }
             });
 
-            // 2. Charger Menus et Avis spécifiquement pour ce resto
             viewModel.loadMenus(currentRestaurantId);
             viewModel.loadAvis(currentRestaurantId);
         }
 
-        // Observation des Menus
-        viewModel.getMenus().observe(getViewLifecycleOwner(), menus -> {
-            menuAdapter.setMenus(menus);
+        viewModel.getMenus().observe(getViewLifecycleOwner(), menus -> menuAdapter.setMenus(menus));
+        viewModel.getAvis().observe(getViewLifecycleOwner(), avisList -> avisAdapter.setAvisList(avisList));
+
+        // Récupération de l'image retouchée après le retour de l'éditeur
+        getParentFragmentManager().setFragmentResultListener("imageEditKey", getViewLifecycleOwner(), (requestKey, bundle) -> {
+            String url = bundle.getString("editedImageUri");
+            if (url != null) {
+                sessionImageUrls.add(url);
+                // On réouvre automatiquement le dialogue pour continuer l'avis
+                showAddAvisDialog();
+            }
         });
 
-        // Observation des Avis
-        viewModel.getAvis().observe(getViewLifecycleOwner(), avisList -> {
-            avisAdapter.setAvisList(avisList);
-        });
-
-        // Clic pour donner un avis
         binding.btnDonnerAvis.setOnClickListener(v -> showAddAvisDialog());
-
         binding.toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
     }
 
@@ -109,9 +112,16 @@ public class DetailsFragment extends Fragment {
         DialogAddAvisBinding dialogBinding = DialogAddAvisBinding.inflate(getLayoutInflater());
         dialog.setContentView(dialogBinding.getRoot());
 
-        // LIEN AVEC LA CAMERA
+        // Afficher l'aperçu si des photos ont été prises
+        if (!sessionImageUrls.isEmpty()) {
+            dialogBinding.cardAvisPhoto.setVisibility(View.VISIBLE);
+            // On affiche la dernière photo prise par exemple
+            Glide.with(this).load(sessionImageUrls.get(sessionImageUrls.size() - 1)).into(dialogBinding.ivAvisPhoto);
+            dialogBinding.btnAddPhoto.setText("Ajouter une autre photo (" + sessionImageUrls.size() + ")");
+        }
+
         dialogBinding.btnAddPhoto.setOnClickListener(v -> {
-            dialog.dismiss(); // Fermer le formulaire pour ouvrir la caméra
+            dialog.dismiss();
             Navigation.findNavController(requireView()).navigate(R.id.action_detailsFragment_to_cameraFragment);
         });
 
@@ -125,21 +135,22 @@ public class DetailsFragment extends Fragment {
                 return;
             }
 
-            // Création de l'objet Avis (infos utilisateurs factices pour l'instant)
             Avis avis = new Avis();
             avis.setIdRestaurant(currentRestaurantId);
             avis.setTitre(titre);
             avis.setDescription(desc);
             avis.setNote(note);
+            avis.setImageUrls(new ArrayList<>(sessionImageUrls)); // On passe toute la liste des photos
             avis.setPrenomUtilisateur("Utilisateur");
             avis.setNomUtilisateur("Smeal");
 
             RestaurantRepository.getInstance().addAvis(avis, new FirestoreCallback<Void>() {
                 @Override
                 public void onSuccess(Void result) {
-                    Toast.makeText(getContext(), "Avis publié !", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Avis publié avec " + sessionImageUrls.size() + " photo(s) !", Toast.LENGTH_SHORT).show();
+                    sessionImageUrls.clear(); // Vider la liste après publication
                     dialog.dismiss();
-                    viewModel.loadAvis(currentRestaurantId); // Recharger les avis
+                    viewModel.loadAvis(currentRestaurantId);
                 }
 
                 @Override
