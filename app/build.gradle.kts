@@ -23,7 +23,9 @@ android {
         //load the values from .properties file
         val keystoreFile = project.rootProject.file("local.properties")
         val properties = Properties()
-        properties.load(keystoreFile.inputStream())
+        if (keystoreFile.exists()) {
+            properties.load(keystoreFile.inputStream())
+        }
 
         //return empty key in case something goes wrong
         val apiKey = properties.getProperty("API_KEY") ?: ""
@@ -31,8 +33,10 @@ android {
         buildConfigField(
             type = "String",
             name = "API_KEY",
-            value = apiKey
+            value = "\"$apiKey\""
         )
+
+        manifestPlaceholders["API_KEY"] = apiKey
     }
 
     buildTypes {
@@ -52,6 +56,7 @@ android {
     // AJOUT IMPORTANT POUR LE PROJET
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
