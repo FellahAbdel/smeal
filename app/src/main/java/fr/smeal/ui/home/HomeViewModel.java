@@ -18,11 +18,13 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<List<Restaurant>> restaurants = new MutableLiveData<>();
     private final MutableLiveData<List<Menu>> menus = new MutableLiveData<>();
     private final MutableLiveData<List<Avis>> avis = new MutableLiveData<>();
+    private final MutableLiveData<List<Avis>> allAvis = new MutableLiveData<>();
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
     public HomeViewModel() {
         repository = RestaurantRepository.getInstance();
         loadRestaurants();
+        loadAllAvis();
     }
 
     public void loadRestaurants() {
@@ -39,37 +41,43 @@ public class HomeViewModel extends ViewModel {
         });
     }
 
+    public void loadAllAvis() {
+        repository.getAllAvis(new FirestoreCallback<List<Avis>>() {
+            @Override
+            public void onSuccess(List<Avis> result) {
+                allAvis.setValue(result);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                error.setValue("Erreur chargement tous les avis: " + e.getMessage());
+            }
+        });
+    }
+
     public void loadMenus(String restaurantId) {
-        android.util.Log.d("DEBUG_SMEAL", "Chargement des menus pour : " + restaurantId);
         repository.getMenusForRestaurant(restaurantId, new FirestoreCallback<List<Menu>>() {
             @Override
             public void onSuccess(List<Menu> result) {
-                android.util.Log.d("DEBUG_SMEAL", "Menus reçus : " + result.size());
                 menus.setValue(result);
             }
 
             @Override
             public void onFailure(Exception e) {
-                android.util.Log.e("DEBUG_SMEAL", "Erreur menus : ", e);
                 error.setValue("Erreur chargement menus: " + e.getMessage());
             }
         });
     }
 
     public void loadAvis(String restaurantId) {
-        android.util.Log.d("DEBUG_SMEAL avis", "Chargement des avis pour : " + restaurantId);
-
         repository.getAvisForRestaurant(restaurantId, new FirestoreCallback<List<Avis>>() {
             @Override
             public void onSuccess(List<Avis> result) {
-
-                android.util.Log.d("DEBUG_SMEAL avis", "Avis reçus : " + result.size());
                 avis.setValue(result);
             }
 
             @Override
             public void onFailure(Exception e) {
-                android.util.Log.e("DEBUG_SMEAL avis", "Erreur avis : ", e);
                 error.setValue("Erreur chargement avis: " + e.getMessage());
             }
         });
@@ -83,6 +91,9 @@ public class HomeViewModel extends ViewModel {
     }
     public LiveData<List<Avis>> getAvis() {
         return avis;
+    }
+    public LiveData<List<Avis>> getAllAvis() {
+        return allAvis;
     }
     public LiveData<String> getError() {
         return error;

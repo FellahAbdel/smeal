@@ -48,6 +48,24 @@ public class RestaurantRepository {
                 });
     }
 
+    public void getAllAvis(FirestoreCallback<List<Avis>> callback) {
+        db.collection(COLLECTION_AVIS)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Avis> avisList = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Avis avis = document.toObject(Avis.class);
+                            avis.setId(document.getId());
+                            avisList.add(avis);
+                        }
+                        callback.onSuccess(avisList);
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
+                });
+    }
+
     public void getMenusForRestaurant(String restaurantId, FirestoreCallback<List<Menu>> callback) {
         db.collection(COLLECTION_MENUS)
                 .whereEqualTo("idRestaurant", restaurantId)
