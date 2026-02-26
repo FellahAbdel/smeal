@@ -1,7 +1,9 @@
 package fr.smeal.ui.camera;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
@@ -41,16 +45,28 @@ public class CameraFragment extends Fragment {
     private FragmentCameraBinding binding;
     private ImageCapture imageCapture;
     private ExecutorService cameraExecutor;
+    private FusedLocationProviderClient fusedLocationClient;
+    private double lastLatitude = 0;
+    private double lastLongitude = 0;
 
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
+    private final ActivityResultLauncher<String[]> requestPermissionsLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                Boolean cameraGranted = result.getOrDefault(Manifest.permission.CAMERA, false);
+                Boolean locationGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
+                
+                if (cameraGranted != null && cameraGranted) {
                     startCamera();
-                } else {
-                    Toast.makeText(getContext(), "Permission caméra refusée", Toast.LENGTH_SHORT).show();
-                    Navigation.findNavController(requireView()).navigateUp();
+                }
+                if (locationGranted != null && locationGranted) {
+                    captureLocation();
                 }
             });
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,14 +80,31 @@ public class CameraFragment extends Fragment {
 
         if (allPermissionsGranted()) {
             startCamera();
+            captureLocation();
         } else {
-            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+            requestPermissionsLauncher.launch(new String[]{
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            });
         }
 
+        // Correction du nom de la variable (View Binding convertit les snake_case en camelCase)
         binding.imageCaptureButton.setOnClickListener(v -> takePhoto());
         binding.btnBackCamera.setOnClickListener(v -> Navigation.findNavController(view).navigateUp());
 
         cameraExecutor = Executors.newSingleThreadExecutor();
+    }
+
+    @SuppressLint("MissingPermission")
+    private void captureLocation() {
+        fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
+            if (location != null) {
+                lastLatitude = location.getLatitude();
+                lastLongitude = location.getLongitude();
+                Log.d(TAG, "Location capturée: " + lastLatitude + ", " + lastLongitude);
+            }
+        });
     }
 
     private void startCamera() {
@@ -112,11 +145,12 @@ public class CameraFragment extends Fragment {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         Uri savedUri = Uri.fromFile(photoFile);
-                        Log.d(TAG, "Photo sauvegardée : " + savedUri);
                         
-                        // Navigation vers l'éditeur avec l'URI de la photo
                         Bundle args = new Bundle();
                         args.putString("imageUri", savedUri.toString());
+                        args.putDouble("latitude", lastLatitude);
+                        args.putDouble("longitude", lastLongitude);
+                        
                         Navigation.findNavController(requireView()).navigate(R.id.action_cameraFragment_to_imageEditFragment, args);
                     }
 
@@ -128,7 +162,8 @@ public class CameraFragment extends Fragment {
     }
 
     private boolean allPermissionsGranted() {
-        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+               ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override

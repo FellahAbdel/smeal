@@ -40,12 +40,16 @@ public class ImageEditFragment extends Fragment implements SensorEventListener {
     private Sensor lightSensor;
     private Sensor proximitySensor;
     private Uri imageUri;
+    private double latitude;
+    private double longitude;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             imageUri = Uri.parse(getArguments().getString("imageUri"));
+            latitude = getArguments().getDouble("latitude", 0);
+            longitude = getArguments().getDouble("longitude", 0);
         }
         sensorManager = (SensorManager) requireContext().getSystemService(Context.SENSOR_SERVICE);
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
@@ -98,7 +102,6 @@ public class ImageEditFragment extends Fragment implements SensorEventListener {
         Bitmap editedBitmap = binding.photoEditorView.getFinalBitmap();
         if (editedBitmap == null) return;
 
-        // On enregistre l'image dans le cache local de l'appli
         File outputDir = requireContext().getExternalCacheDir();
         File outputFile = new File(outputDir, "edited_" + UUID.randomUUID().toString() + ".jpg");
 
@@ -106,9 +109,12 @@ public class ImageEditFragment extends Fragment implements SensorEventListener {
             editedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
             Uri localUri = Uri.fromFile(outputFile);
             
-            // On renvoie l'URI LOCAL au DetailsFragment
             Bundle result = new Bundle();
             result.putString("editedImageUri", localUri.toString());
+            // ON RENVOIE AUSSI LA POSITION GPS
+            result.putDouble("latitude", latitude);
+            result.putDouble("longitude", longitude);
+            
             getParentFragmentManager().setFragmentResult("imageEditKey", result);
             
             Navigation.findNavController(requireView()).popBackStack(R.id.detailsFragment, false);

@@ -1,6 +1,8 @@
 package fr.smeal.ui.details;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +17,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.smeal.R;
 import fr.smeal.data.model.Avis;
@@ -30,14 +40,22 @@ import fr.smeal.utils.FirestoreCallback;
 
 public class DetailsFragment extends Fragment {
 
+    private static final String TAG = "DetailsFragment";
     private FragmentDetailsBinding binding;
     private HomeViewModel viewModel;
     private MenuAdapter menuAdapter;
     private AvisAdapter avisAdapter;
     private String currentRestaurantId;
     
-    // Liste locale pour stocker les photos prises durant la session de rédaction de l'avis
-    private List<String> sessionImageUrls = new ArrayList<>();
+    private static class LocalPhoto {
+        Uri uri;
+        double lat, lon;
+        LocalPhoto(Uri uri, double lat, double lon) {
+            this.uri = uri; this.lat = lat; this.lon = lon;
+        }
+    }
+    
+    private final List<LocalPhoto> sessionPhotos = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,12 +68,10 @@ public class DetailsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
-
         setupRecyclerViews();
 
         if (getArguments() != null) {
             currentRestaurantId = getArguments().getString("restaurantId");
-            
             viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
                 for (Restaurant r : restaurants) {
                     if (r.getId().equals(currentRestaurantId)) {
@@ -64,7 +80,6 @@ public class DetailsFragment extends Fragment {
                     }
                 }
             });
-
             viewModel.loadMenus(currentRestaurantId);
             viewModel.loadAvis(currentRestaurantId);
         }
@@ -72,12 +87,13 @@ public class DetailsFragment extends Fragment {
         viewModel.getMenus().observe(getViewLifecycleOwner(), menus -> menuAdapter.setMenus(menus));
         viewModel.getAvis().observe(getViewLifecycleOwner(), avisList -> avisAdapter.setAvisList(avisList));
 
-        // Récupération de l'image retouchée après le retour de l'éditeur
         getParentFragmentManager().setFragmentResultListener("imageEditKey", getViewLifecycleOwner(), (requestKey, bundle) -> {
-            String url = bundle.getString("editedImageUri");
-            if (url != null) {
-                sessionImageUrls.add(url);
-                // On réouvre automatiquement le dialogue pour continuer l'avis
+            String uriStr = bundle.getString("editedImageUri");
+            double lat = bundle.getDouble("latitude", 0);
+            double lon = bundle.getDouble("longitude", 0);
+            
+            if (uriStr != null) {
+                sessionPhotos.add(new LocalPhoto(Uri.parse(uriStr), lat, lon));
                 showAddAvisDialog();
             }
         });
@@ -101,7 +117,6 @@ public class DetailsFragment extends Fragment {
         binding.tvAdresseDetails.setText(r.getAdresse());
         binding.tvCuisineType.setText(r.getCuisineType());
         binding.tvRatingDetails.setText(String.format("%.1f ★", r.getRating()));
-
         if (r.getImageUrl() != null && !r.getImageUrl().isEmpty()) {
             Glide.with(this).load(r.getImageUrl()).centerCrop().into(binding.ivDetails);
         }
@@ -112,12 +127,10 @@ public class DetailsFragment extends Fragment {
         DialogAddAvisBinding dialogBinding = DialogAddAvisBinding.inflate(getLayoutInflater());
         dialog.setContentView(dialogBinding.getRoot());
 
-        // Afficher l'aperçu si des photos ont été prises
-        if (!sessionImageUrls.isEmpty()) {
+        if (!sessionPhotos.isEmpty()) {
             dialogBinding.cardAvisPhoto.setVisibility(View.VISIBLE);
-            // On affiche la dernière photo prise par exemple
-            Glide.with(this).load(sessionImageUrls.get(sessionImageUrls.size() - 1)).into(dialogBinding.ivAvisPhoto);
-            dialogBinding.btnAddPhoto.setText("Ajouter une autre photo (" + sessionImageUrls.size() + ")");
+            Glide.with(this).load(sessionPhotos.get(sessionPhotos.size() - 1).uri).into(dialogBinding.ivAvisPhoto);
+            dialogBinding.btnAddPhoto.setText("Ajouter une autre photo (" + sessionPhotos.size() + ")");
         }
 
         dialogBinding.btnAddPhoto.setOnClickListener(v -> {
@@ -135,31 +148,116 @@ public class DetailsFragment extends Fragment {
                 return;
             }
 
-            Avis avis = new Avis();
-            avis.setIdRestaurant(currentRestaurantId);
-            avis.setTitre(titre);
-            avis.setDescription(desc);
-            avis.setNote(note);
-            avis.setImageUrls(new ArrayList<>(sessionImageUrls)); // On passe toute la liste des photos
-            avis.setPrenomUtilisateur("Utilisateur");
-            avis.setNomUtilisateur("Smeal");
+            dialogBinding.btnSubmitAvis.setEnabled(false);
+            Toast.makeText(getContext(), "Publication en cours...", Toast.LENGTH_SHORT).show();
 
-            RestaurantRepository.getInstance().addAvis(avis, new FirestoreCallback<Void>() {
-                @Override
-                public void onSuccess(Void result) {
-                    Toast.makeText(getContext(), "Avis publié avec " + sessionImageUrls.size() + " photo(s) !", Toast.LENGTH_SHORT).show();
-                    sessionImageUrls.clear(); // Vider la liste après publication
-                    dialog.dismiss();
-                    viewModel.loadAvis(currentRestaurantId);
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    Toast.makeText(getContext(), "Erreur : " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            uploadPhotosAndSaveAvis(titre, desc, note, dialog, dialogBinding.btnSubmitAvis);
         });
 
         dialog.show();
+    }
+
+    private void uploadPhotosAndSaveAvis(String titre, String desc, int note, BottomSheetDialog dialog, View btnSubmit) {
+        final List<String> finalUrls = Collections.synchronizedList(new ArrayList<>());
+        final AtomicBoolean hasError = new AtomicBoolean(false);
+        final AtomicInteger processedCount = new AtomicInteger(0);
+        
+        if (sessionPhotos.isEmpty()) {
+            saveAvisToFirestore(titre, desc, note, finalUrls, 0, 0, dialog, btnSubmit);
+            return;
+        }
+
+        double lat = sessionPhotos.get(0).lat;
+        double lon = sessionPhotos.get(0).lon;
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        for (LocalPhoto lp : sessionPhotos) {
+            try {
+                InputStream inputStream = requireContext().getContentResolver().openInputStream(lp.uri);
+                if (inputStream == null) {
+                    handleUploadError("Erreur : Fichier inaccessible", hasError, processedCount, sessionPhotos.size(), titre, desc, note, finalUrls, lat, lon, dialog, btnSubmit);
+                    continue;
+                }
+
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                byte[] data = new byte[16384];
+                int nRead;
+                while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                    buffer.write(data, 0, nRead);
+                }
+                byte[] bytes = buffer.toByteArray();
+                inputStream.close();
+
+                if (bytes.length == 0) {
+                    handleUploadError("Erreur : Photo vide", hasError, processedCount, sessionPhotos.size(), titre, desc, note, finalUrls, lat, lon, dialog, btnSubmit);
+                    continue;
+                }
+
+                String filename = "avis/" + UUID.randomUUID().toString() + ".jpg";
+                StorageReference ref = storage.getReference().child(filename);
+
+                ref.putBytes(bytes).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                    if (!hasError.get()) {
+                        finalUrls.add(uri.toString());
+                        checkStatus(hasError, processedCount, sessionPhotos.size(), titre, desc, note, finalUrls, lat, lon, dialog, btnSubmit);
+                    }
+                })).addOnFailureListener(e -> {
+                    Log.e(TAG, "Erreur upload Firebase Storage", e);
+                    handleUploadError("Échec de l'envoi d'une photo. L'avis n'a pas été publié.", hasError, processedCount, sessionPhotos.size(), titre, desc, note, finalUrls, lat, lon, dialog, btnSubmit);
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Erreur lecture fichier", e);
+                handleUploadError("Erreur technique lors de la préparation des photos.", hasError, processedCount, sessionPhotos.size(), titre, desc, note, finalUrls, lat, lon, dialog, btnSubmit);
+            }
+        }
+    }
+
+    private void handleUploadError(String message, AtomicBoolean hasError, AtomicInteger count, int total, String titre, String desc, int note, List<String> urls, double lat, double lon, BottomSheetDialog dialog, View btnSubmit) {
+        // On ne montre le message d'erreur qu'une seule fois
+        if (!hasError.getAndSet(true)) {
+            requireActivity().runOnUiThread(() -> {
+                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                btnSubmit.setEnabled(true);
+            });
+        }
+        checkStatus(hasError, count, total, titre, desc, note, urls, lat, lon, dialog, btnSubmit);
+    }
+
+    private void checkStatus(AtomicBoolean hasError, AtomicInteger count, int total, String titre, String desc, int note, List<String> urls, double lat, double lon, BottomSheetDialog dialog, View btnSubmit) {
+        if (count.incrementAndGet() == total) {
+            // Uniquement si AUCUNE erreur n'est survenue
+            if (!hasError.get()) {
+                saveAvisToFirestore(titre, desc, note, urls, lat, lon, dialog, btnSubmit);
+            }
+        }
+    }
+
+    private void saveAvisToFirestore(String titre, String desc, int note, List<String> urls, double lat, double lon, BottomSheetDialog dialog, View btnSubmit) {
+        Avis avis = new Avis();
+        avis.setIdRestaurant(currentRestaurantId);
+        avis.setTitre(titre);
+        avis.setDescription(desc);
+        avis.setNote(note);
+        avis.setImageUrls(urls);
+        avis.setLatitude(lat);
+        avis.setLongitude(lon);
+        avis.setPrenomUtilisateur("Utilisateur");
+        avis.setNomUtilisateur("Smeal");
+
+        RestaurantRepository.getInstance().addAvis(avis, new FirestoreCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                Toast.makeText(getContext(), "Avis publié avec succès !", Toast.LENGTH_SHORT).show();
+                sessionPhotos.clear();
+                dialog.dismiss();
+                viewModel.loadAvis(currentRestaurantId);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(getContext(), "Erreur : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                btnSubmit.setEnabled(true);
+            }
+        });
     }
 }
