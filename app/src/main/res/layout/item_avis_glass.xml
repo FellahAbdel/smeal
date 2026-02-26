@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="16dp"
     android:background="@drawable/glass_background"
-    android:elevation="2dp"
+    android:elevation="4dp"
     android:padding="16dp">
 
     <TextView
@@ -51,6 +51,20 @@
         android:textColor="#636E72"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tvTitreAvis"
-        tools:text="Le cadre est magnifique et la nourriture est délicieuse. Je recommande vivement le plateau royal." />
+        tools:text="Le cadre est magnifique et la nourriture est délicieuse." />
+
+    <!-- RecyclerView horizontal pour les photos de l'avis -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvAvisPhotos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/tvDescriptionAvis"
+        tools:listitem="@layout/item_avis_photo"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

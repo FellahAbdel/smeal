@@ -49,7 +49,6 @@ public class RestaurantRepository {
     }
 
     public void getMenusForRestaurant(String restaurantId, FirestoreCallback<List<Menu>> callback) {
-
         db.collection(COLLECTION_MENUS)
                 .whereEqualTo("idRestaurant", restaurantId)
                 .get()
@@ -57,7 +56,6 @@ public class RestaurantRepository {
                     if (task.isSuccessful()) {
                         List<Menu> menus = new ArrayList<>();
                         for (QueryDocumentSnapshot document : task.getResult()) {
-
                             Menu menu = document.toObject(Menu.class);
                             menu.setId(document.getId());
                             menus.add(menu);
@@ -86,5 +84,12 @@ public class RestaurantRepository {
                         callback.onFailure(task.getException());
                     }
                 });
+    }
+
+    public void addAvis(Avis avis, FirestoreCallback<Void> callback) {
+        db.collection(COLLECTION_AVIS)
+                .add(avis)
+                .addOnSuccessListener(documentReference -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onFailure);
     }
 }

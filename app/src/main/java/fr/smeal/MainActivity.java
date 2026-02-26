@@ -42,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
 
             // Gestion de la visibilité du header et footer selon la destination
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-                if (destination.getId() == R.id.detailsFragment) {
+                int id = destination.getId();
+                // Masquer pour les détails, la caméra ET l'édition d'image
+                if (id == R.id.detailsFragment || id == R.id.cameraFragment || id == R.id.imageEditFragment) {
                     binding.header.setVisibility(View.GONE);
                     binding.bottomNavContainer.setVisibility(View.GONE);
                 } else {
@@ -67,15 +69,15 @@ public class MainActivity extends AppCompatActivity {
             if (keypadHeight > screenHeight * 0.15) {
                 binding.bottomNavContainer.setVisibility(View.GONE);
             } else {
-                // On ne réaffiche le menu que si on n'est pas en mode recherche 
-                // ET qu'on n'est pas sur la page de détails
                 NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
                 if (navHostFragment != null) {
                     NavController navController = navHostFragment.getNavController();
-                    if (navController.getCurrentDestination() != null && 
-                        navController.getCurrentDestination().getId() != R.id.detailsFragment && 
-                        !isSearching) {
-                        binding.bottomNavContainer.setVisibility(View.VISIBLE);
+                    if (navController.getCurrentDestination() != null) {
+                        int id = navController.getCurrentDestination().getId();
+                        // Ne pas réafficher si on est sur détails, caméra, édition ou en recherche
+                        if (id != R.id.detailsFragment && id != R.id.cameraFragment && id != R.id.imageEditFragment && !isSearching) {
+                            binding.bottomNavContainer.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
             }
@@ -116,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
             binding.logo.setVisibility(View.GONE);
             binding.tvAppName.setVisibility(View.GONE);
             binding.btnSearch.setVisibility(View.GONE);
-            // On masque le bloc de navigation complet
             binding.bottomNavContainer.setVisibility(View.GONE);
 
             binding.btnBackSearch.setVisibility(View.VISIBLE);
