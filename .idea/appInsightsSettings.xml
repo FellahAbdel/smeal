@@ -7,14 +7,6 @@
         <entry key="Firebase Crashlytics">
           <value>
             <InsightsFilterSettings>
-              <option name="connection">
-                <ConnectionSetting>
-                  <option name="appId" value="fr.smeal" />
-                  <option name="mobileSdkAppId" value="1:414528157694:android:9f58a10a10cc51b32472af" />
-                  <option name="projectId" value="smeal-1ecbd" />
-                  <option name="projectNumber" value="414528157694" />
-                </ConnectionSetting>
-              </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
               <option name="timeIntervalDays" value="THIRTY_DAYS" />
               <option name="visibilityType" value="ALL" />

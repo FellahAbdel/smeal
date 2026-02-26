@@ -52,6 +52,7 @@ android {
     // AJOUT IMPORTANT POUR LE PROJET
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
