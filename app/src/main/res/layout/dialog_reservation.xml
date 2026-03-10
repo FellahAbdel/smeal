@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/glass_background"
+    android:elevation="16dp"
+    android:padding="24dp">
+
+    <View
+        android:id="@+id/vHandleRes"
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:background="#DCDDE1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTitleRes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Réserver une table"
+        android:textColor="#2D3436"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/vHandleRes" />
+
+    <!-- Sélection Date -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnPickDate"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:text="Choisir la date"
+        android:textColor="#2D3436"
+        app:cornerRadius="16sp"
+        app:icon="@android:drawable/ic_menu_today"
+        app:iconTint="#FF6B6B"
+        app:layout_constraintEnd_toStartOf="@+id/btnPickTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitleRes"
+        app:strokeColor="#DCDDE1" />
+
+    <!-- Sélection Heure -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnPickTime"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="8dp"
+        android:text="Heure"
+        android:textColor="#2D3436"
+        app:cornerRadius="16sp"
+        app:icon="@android:drawable/ic_menu_recent_history"
+        app:iconTint="#FF6B6B"
+        app:layout_constraintBottom_toBottomOf="@id/btnPickDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnPickDate"
+        app:layout_constraintTop_toTopOf="@id/btnPickDate"
+        app:strokeColor="#DCDDE1" />
+
+    <!-- Nombre de personnes -->
+    <TextView
+        android:id="@+id/tvLabelPeople"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Nombre de convives"
+        android:textColor="#2D3436"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnPickDate" />
+
+    <LinearLayout
+        android:id="@+id/layoutPeopleCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/tvLabelPeople"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvLabelPeople">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMinusPeople"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="-"
+            android:textSize="20sp"
+            android:textColor="#FF6B6B" />
+
+        <TextView
+            android:id="@+id/tvNbPeople"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="2"
+            android:textColor="#2D3436"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPlusPeople"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="+"
+            android:textSize="20sp"
+            android:textColor="#FF6B6B" />
+    </LinearLayout>
+
+    <!-- Bouton Confirmation -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConfirmRes"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="16dp"
+        android:text="CONFIRMER LA RÉSERVATION"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:backgroundTint="#FF6B6B"
+        app:cornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLabelPeople" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

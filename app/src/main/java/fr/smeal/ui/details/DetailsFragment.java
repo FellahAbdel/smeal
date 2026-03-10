@@ -1,5 +1,7 @@
 package fr.smeal.ui.details;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,17 +25,21 @@ import com.google.firebase.storage.StorageReference;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.smeal.R;
 import fr.smeal.data.model.Avis;
+import fr.smeal.data.model.Reservation;
 import fr.smeal.data.model.Restaurant;
 import fr.smeal.data.repository.RestaurantRepository;
 import fr.smeal.databinding.DialogAddAvisBinding;
+import fr.smeal.databinding.DialogReservationBinding;
 import fr.smeal.databinding.FragmentDetailsBinding;
 import fr.smeal.ui.home.HomeViewModel;
 import fr.smeal.utils.FirestoreCallback;
@@ -46,6 +52,7 @@ public class DetailsFragment extends Fragment {
     private MenuAdapter menuAdapter;
     private AvisAdapter avisAdapter;
     private String currentRestaurantId;
+    private String currentRestaurantName;
     
     private static class LocalPhoto {
         Uri uri;
@@ -75,6 +82,7 @@ public class DetailsFragment extends Fragment {
             viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
                 for (Restaurant r : restaurants) {
                     if (r.getId().equals(currentRestaurantId)) {
+                        currentRestaurantName = r.getNom();
                         displayRestaurant(r);
                         break;
                     }
@@ -91,7 +99,6 @@ public class DetailsFragment extends Fragment {
             String uriStr = bundle.getString("editedImageUri");
             double lat = bundle.getDouble("latitude", 0);
             double lon = bundle.getDouble("longitude", 0);
-            
             if (uriStr != null) {
                 sessionPhotos.add(new LocalPhoto(Uri.parse(uriStr), lat, lon));
                 showAddAvisDialog();
@@ -99,6 +106,7 @@ public class DetailsFragment extends Fragment {
         });
 
         binding.btnDonnerAvis.setOnClickListener(v -> showAddAvisDialog());
+        binding.btnReserver.setOnClickListener(v -> showReservationDialog());
         binding.toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
     }
 
@@ -116,10 +124,80 @@ public class DetailsFragment extends Fragment {
         binding.tvNomDetails.setText(r.getNom());
         binding.tvAdresseDetails.setText(r.getAdresse());
         binding.tvCuisineType.setText(r.getCuisineType());
-        binding.tvRatingDetails.setText(String.format("%.1f ★", r.getRating()));
+        binding.tvRatingDetails.setText(String.format(Locale.getDefault(), "%.1f ★", r.getRating()));
         if (r.getImageUrl() != null && !r.getImageUrl().isEmpty()) {
             Glide.with(this).load(r.getImageUrl()).centerCrop().into(binding.ivDetails);
         }
+    }
+
+    private void showReservationDialog() {
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        DialogReservationBinding resBinding = DialogReservationBinding.inflate(getLayoutInflater());
+        dialog.setContentView(resBinding.getRoot());
+
+        final Calendar cal = Calendar.getInstance();
+        final int[] nbPeople = {2};
+
+        resBinding.btnPickDate.setOnClickListener(v -> {
+            new DatePickerDialog(requireContext(), (view, year, month, dayOfMonth) -> {
+                cal.set(Calendar.YEAR, year);
+                cal.set(Calendar.MONTH, month);
+                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                resBinding.btnPickDate.setText(String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, month + 1, year));
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
+        });
+
+        resBinding.btnPickTime.setOnClickListener(v -> {
+            new TimePickerDialog(requireContext(), (view, hourOfDay, minute) -> {
+                cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                cal.set(Calendar.MINUTE, minute);
+                resBinding.btnPickTime.setText(String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute));
+            }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show();
+        });
+
+        resBinding.btnPlusPeople.setOnClickListener(v -> {
+            nbPeople[0]++;
+            resBinding.tvNbPeople.setText(String.valueOf(nbPeople[0]));
+        });
+
+        resBinding.btnMinusPeople.setOnClickListener(v -> {
+            if (nbPeople[0] > 1) {
+                nbPeople[0]--;
+                resBinding.tvNbPeople.setText(String.valueOf(nbPeople[0]));
+            }
+        });
+
+        resBinding.btnConfirmRes.setOnClickListener(v -> {
+            String dateStr = resBinding.btnPickDate.getText().toString();
+            String timeStr = resBinding.btnPickTime.getText().toString();
+
+            if (dateStr.equals("Choisir la date") || timeStr.equals("Heure")) {
+                Toast.makeText(getContext(), "Merci de choisir une date et une heure", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Reservation res = new Reservation();
+            res.setIdRestaurant(currentRestaurantId);
+            res.setNomRestaurant(currentRestaurantName);
+            res.setDate(dateStr + " à " + timeStr);
+            res.setNbPersonnes(nbPeople[0]);
+            res.setPrenomUtilisateur("Utilisateur");
+            res.setNomUtilisateur("Smeal");
+
+            RestaurantRepository.getInstance().addReservation(res, new FirestoreCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    Toast.makeText(getContext(), "Réservation confirmée !", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                }
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(getContext(), "Erreur : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        dialog.show();
     }
 
     private void showAddAvisDialog() {
@@ -150,7 +228,6 @@ public class DetailsFragment extends Fragment {
 
             dialogBinding.btnSubmitAvis.setEnabled(false);
             Toast.makeText(getContext(), "Publication en cours...", Toast.LENGTH_SHORT).show();
-
             uploadPhotosAndSaveAvis(titre, desc, note, dialog, dialogBinding.btnSubmitAvis);
         });
 
@@ -213,7 +290,6 @@ public class DetailsFragment extends Fragment {
     }
 
     private void handleUploadError(String message, AtomicBoolean hasError, AtomicInteger count, int total, String titre, String desc, int note, List<String> urls, double lat, double lon, BottomSheetDialog dialog, View btnSubmit) {
-        // On ne montre le message d'erreur qu'une seule fois
         if (!hasError.getAndSet(true)) {
             requireActivity().runOnUiThread(() -> {
                 Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
@@ -225,7 +301,6 @@ public class DetailsFragment extends Fragment {
 
     private void checkStatus(AtomicBoolean hasError, AtomicInteger count, int total, String titre, String desc, int note, List<String> urls, double lat, double lon, BottomSheetDialog dialog, View btnSubmit) {
         if (count.incrementAndGet() == total) {
-            // Uniquement si AUCUNE erreur n'est survenue
             if (!hasError.get()) {
                 saveAvisToFirestore(titre, desc, note, urls, lat, lon, dialog, btnSubmit);
             }
