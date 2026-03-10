@@ -21,6 +21,8 @@ public class HomeViewModel extends ViewModel {
     private final RestaurantRepository repository;
     private final MutableLiveData<List<Restaurant>> restaurants = new MutableLiveData<>();
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
+    private final MutableLiveData<String> selectedCategory = new MutableLiveData<>("Tout");
+    private final MutableLiveData<Double> minRating = new MutableLiveData<>(0.0);
     private final MediatorLiveData<List<Restaurant>> filteredRestaurants = new MediatorLiveData<>();
     private final MutableLiveData<List<Menu>> menus = new MutableLiveData<>();
     private final MutableLiveData<List<Avis>> avis = new MutableLiveData<>();
@@ -32,6 +34,8 @@ public class HomeViewModel extends ViewModel {
         
         filteredRestaurants.addSource(restaurants, list -> filterRestaurants());
         filteredRestaurants.addSource(searchQuery, query -> filterRestaurants());
+        filteredRestaurants.addSource(selectedCategory, cat -> filterRestaurants());
+        filteredRestaurants.addSource(minRating, rating -> filterRestaurants());
 
         loadRestaurants();
         loadAllAvis();
@@ -40,23 +44,46 @@ public class HomeViewModel extends ViewModel {
     private void filterRestaurants() {
         List<Restaurant> fullList = restaurants.getValue();
         String query = searchQuery.getValue();
+        String category = selectedCategory.getValue();
+        Double rating = minRating.getValue();
 
         if (fullList == null) {
             filteredRestaurants.setValue(new ArrayList<>());
             return;
         }
 
-        if (query == null || query.isEmpty()) {
-            filteredRestaurants.setValue(fullList);
-        } else {
-            String lowerQuery = query.toLowerCase().trim();
-            List<Restaurant> filtered = fullList.stream()
-                    .filter(r -> (r.getNom() != null && r.getNom().toLowerCase().contains(lowerQuery)) ||
-                                (r.getAdresse() != null && r.getAdresse().toLowerCase().contains(lowerQuery)) ||
-                                (r.getCuisineType() != null && r.getCuisineType().toLowerCase().contains(lowerQuery)))
-                    .collect(Collectors.toList());
-            filteredRestaurants.setValue(filtered);
-        }
+        String lowerQuery = (query != null) ? query.toLowerCase().trim() : "";
+        double minR = (rating != null) ? rating : 0.0;
+        String catFilter = (category != null) ? category : "Tout";
+
+        List<Restaurant> filtered = fullList.stream()
+                .filter(r -> {
+                    // Filter by Search Query
+                    boolean matchesQuery = lowerQuery.isEmpty() ||
+                            (r.getNom() != null && r.getNom().toLowerCase().contains(lowerQuery)) ||
+                            (r.getAdresse() != null && r.getAdresse().toLowerCase().contains(lowerQuery)) ||
+                            (r.getCuisineType() != null && r.getCuisineType().toLowerCase().contains(lowerQuery));
+
+                    // Filter by Category
+                    boolean matchesCategory = catFilter.equals("Tout") ||
+                            (r.getCuisineType() != null && r.getCuisineType().equalsIgnoreCase(catFilter));
+
+                    // Filter by Rating
+                    boolean matchesRating = r.getRating() >= minR;
+
+                    return matchesQuery && matchesCategory && matchesRating;
+                })
+                .collect(Collectors.toList());
+        
+        filteredRestaurants.setValue(filtered);
+    }
+
+    public void setSelectedCategory(String category) {
+        selectedCategory.setValue(category);
+    }
+
+    public void setMinRating(Double rating) {
+        minRating.setValue(rating);
     }
 
     public void setSearchQuery(String query) {

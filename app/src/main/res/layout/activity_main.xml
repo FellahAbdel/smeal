@@ -92,6 +92,113 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- FILTER CHIPS (Horizontal Scroll) -->
+    <HorizontalScrollView
+        android:id="@+id/filterScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:scrollbars="none"
+        android:paddingHorizontal="16dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupFilters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipAll"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tout"
+                android:checked="true"
+                android:textColor="@color/glass_chip_text_color"
+                app:chipBackgroundColor="@color/glass_chip_background_color"
+                app:chipStrokeColor="@color/glass_chip_stroke_color"
+                app:chipSurfaceColor="@android:color/transparent"
+                app:chipStrokeWidth="1.5dp"
+                app:chipCornerRadius="16dp"
+                app:chipIconVisible="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipTopRated"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.5+ ★"
+                android:textColor="@color/glass_chip_text_color"
+                app:chipBackgroundColor="@color/glass_chip_background_color"
+                app:chipStrokeColor="@color/glass_chip_stroke_color"
+                app:chipSurfaceColor="@android:color/transparent"
+                app:chipStrokeWidth="1.5dp"
+                app:chipCornerRadius="16dp"
+                app:chipIconVisible="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipItalien"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Italien"
+                android:textColor="@color/glass_chip_text_color"
+                app:chipBackgroundColor="@color/glass_chip_background_color"
+                app:chipStrokeColor="@color/glass_chip_stroke_color"
+                app:chipSurfaceColor="@android:color/transparent"
+                app:chipStrokeWidth="1.5dp"
+                app:chipCornerRadius="16dp"
+                app:chipIconVisible="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipJaponais"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Japonais"
+                android:textColor="@color/glass_chip_text_color"
+                app:chipBackgroundColor="@color/glass_chip_background_color"
+                app:chipStrokeColor="@color/glass_chip_stroke_color"
+                app:chipSurfaceColor="@android:color/transparent"
+                app:chipStrokeWidth="1.5dp"
+                app:chipCornerRadius="16dp"
+                app:chipIconVisible="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipBurger"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Burger"
+                android:textColor="@color/glass_chip_text_color"
+                app:chipBackgroundColor="@color/glass_chip_background_color"
+                app:chipStrokeColor="@color/glass_chip_stroke_color"
+                app:chipSurfaceColor="@android:color/transparent"
+                app:chipStrokeWidth="1.5dp"
+                app:chipCornerRadius="16dp"
+                app:chipIconVisible="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipSante"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Santé"
+                android:textColor="@color/glass_chip_text_color"
+                app:chipBackgroundColor="@color/glass_chip_background_color"
+                app:chipStrokeColor="@color/glass_chip_stroke_color"
+                app:chipSurfaceColor="@android:color/transparent"
+                app:chipStrokeWidth="1.5dp"
+                app:chipCornerRadius="16dp"
+                app:chipIconVisible="false" />
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
     <!-- MAIN CONTENT -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
@@ -103,7 +210,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintTop_toBottomOf="@id/filterScrollView"
         app:navGraph="@navigation/nav_graph" />
 
     <!-- FOOTER -->
