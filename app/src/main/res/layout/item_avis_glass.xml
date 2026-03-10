@@ -27,10 +27,13 @@
         android:layout_height="wrap_content"
         android:textColor="#FF6B6B"
         android:textStyle="bold"
+        android:drawableStart="@drawable/ic_star"
+        android:drawablePadding="4dp"
         app:layout_constraintBottom_toBottomOf="@id/tvUserAvis"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvUserAvis"
-        tools:text="5 ★" />
+        app:drawableTint="#FF6B6B"
+        tools:text="5" />
 
     <TextView
         android:id="@+id/tvTitreAvis"

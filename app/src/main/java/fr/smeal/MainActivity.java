@@ -15,9 +15,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import fr.smeal.databinding.ActivityMainBinding;
 
+import androidx.lifecycle.ViewModelProvider;
+import fr.smeal.ui.home.HomeViewModel;
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private HomeViewModel viewModel;
     private boolean isSearching = false;
 
     @Override
@@ -26,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         setupNavigation();
         setupSearchBar();
@@ -104,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 binding.btnClearSearch.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
+                viewModel.setSearchQuery(s.toString());
             }
 
             @Override
@@ -125,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
             binding.etSearch.requestFocus();
             showKeyboard();
         } else {
+            viewModel.setSearchQuery("");
             binding.logo.setVisibility(View.VISIBLE);
             binding.tvAppName.setVisibility(View.VISIBLE);
             binding.btnSearch.setVisibility(View.VISIBLE);

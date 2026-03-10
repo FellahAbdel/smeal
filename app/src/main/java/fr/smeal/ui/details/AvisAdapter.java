@@ -57,7 +57,7 @@ public class AvisAdapter extends RecyclerView.Adapter<AvisAdapter.ViewHolder> {
 
         public void bind(Avis avis) {
             binding.tvUserAvis.setText(avis.getPrenomUtilisateur() + " " + avis.getNomUtilisateur());
-            binding.tvNoteAvis.setText(avis.getNote() + " ★");
+            binding.tvNoteAvis.setText(String.valueOf(avis.getNote()));
             binding.tvTitreAvis.setText(avis.getTitre());
             binding.tvDescriptionAvis.setText(avis.getDescription());
 

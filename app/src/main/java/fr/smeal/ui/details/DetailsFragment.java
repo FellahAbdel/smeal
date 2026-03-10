@@ -124,7 +124,7 @@ public class DetailsFragment extends Fragment {
         binding.tvNomDetails.setText(r.getNom());
         binding.tvAdresseDetails.setText(r.getAdresse());
         binding.tvCuisineType.setText(r.getCuisineType());
-        binding.tvRatingDetails.setText(String.format(Locale.getDefault(), "%.1f ★", r.getRating()));
+        binding.tvRatingDetails.setText(String.format(Locale.getDefault(), "%.1f", r.getRating()));
         if (r.getImageUrl() != null && !r.getImageUrl().isEmpty()) {
             Glide.with(this).load(r.getImageUrl()).centerCrop().into(binding.ivDetails);
         }

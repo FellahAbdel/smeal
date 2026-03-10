@@ -103,8 +103,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        // Observation des restaurants
-        viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
+        // Observation des restaurants filtrés
+        viewModel.getFilteredRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
             if (restaurants != null && mMap != null) {
                 updateRestaurantMarkers(restaurants);
             }

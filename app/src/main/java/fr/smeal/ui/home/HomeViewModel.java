@@ -12,10 +12,16 @@ import fr.smeal.data.model.Restaurant;
 import fr.smeal.utils.FirestoreCallback;
 import fr.smeal.data.repository.RestaurantRepository;
 
+import androidx.lifecycle.MediatorLiveData;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 public class HomeViewModel extends ViewModel {
 
     private final RestaurantRepository repository;
     private final MutableLiveData<List<Restaurant>> restaurants = new MutableLiveData<>();
+    private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
+    private final MediatorLiveData<List<Restaurant>> filteredRestaurants = new MediatorLiveData<>();
     private final MutableLiveData<List<Menu>> menus = new MutableLiveData<>();
     private final MutableLiveData<List<Avis>> avis = new MutableLiveData<>();
     private final MutableLiveData<List<Avis>> allAvis = new MutableLiveData<>();
@@ -23,8 +29,42 @@ public class HomeViewModel extends ViewModel {
 
     public HomeViewModel() {
         repository = RestaurantRepository.getInstance();
+        
+        filteredRestaurants.addSource(restaurants, list -> filterRestaurants());
+        filteredRestaurants.addSource(searchQuery, query -> filterRestaurants());
+
         loadRestaurants();
         loadAllAvis();
+    }
+
+    private void filterRestaurants() {
+        List<Restaurant> fullList = restaurants.getValue();
+        String query = searchQuery.getValue();
+
+        if (fullList == null) {
+            filteredRestaurants.setValue(new ArrayList<>());
+            return;
+        }
+
+        if (query == null || query.isEmpty()) {
+            filteredRestaurants.setValue(fullList);
+        } else {
+            String lowerQuery = query.toLowerCase().trim();
+            List<Restaurant> filtered = fullList.stream()
+                    .filter(r -> (r.getNom() != null && r.getNom().toLowerCase().contains(lowerQuery)) ||
+                                (r.getAdresse() != null && r.getAdresse().toLowerCase().contains(lowerQuery)) ||
+                                (r.getCuisineType() != null && r.getCuisineType().toLowerCase().contains(lowerQuery)))
+                    .collect(Collectors.toList());
+            filteredRestaurants.setValue(filtered);
+        }
+    }
+
+    public void setSearchQuery(String query) {
+        searchQuery.setValue(query);
+    }
+
+    public LiveData<List<Restaurant>> getFilteredRestaurants() {
+        return filteredRestaurants;
     }
 
     public void loadRestaurants() {

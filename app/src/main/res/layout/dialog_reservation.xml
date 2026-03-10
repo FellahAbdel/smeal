@@ -37,16 +37,15 @@
         android:layout_marginEnd="8dp"
         android:text="Choisir la date"
         android:textColor="#2D3436"
-        app:cornerRadius="16sp"
-        app:icon="@android:drawable/ic_menu_today"
+        app:icon="@drawable/ic_today"
         app:iconTint="#FF6B6B"
         app:layout_constraintEnd_toStartOf="@+id/btnPickTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitleRes"
         app:strokeColor="#DCDDE1" />
 
-    <!-- Sélection Heure -->
-    <com.google.android.material.button.MaterialButton
+        <!-- Sélection Heure -->
+        <com.google.android.material.button.MaterialButton
         android:id="@+id/btnPickTime"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
@@ -54,8 +53,9 @@
         android:layout_marginStart="8dp"
         android:text="Heure"
         android:textColor="#2D3436"
+        android:textStyle="bold"
         app:cornerRadius="16sp"
-        app:icon="@android:drawable/ic_menu_recent_history"
+        app:icon="@drawable/ic_time"
         app:iconTint="#FF6B6B"
         app:layout_constraintBottom_toBottomOf="@id/btnPickDate"
         app:layout_constraintEnd_toEndOf="parent"
