@@ -117,18 +117,49 @@
             android:textColor="#2D3436" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Upload Progress (Hidden by default) -->
+    <LinearLayout
+        android:id="@+id/layoutUploadProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tilDesc">
+
+        <TextView
+            android:id="@+id/tvUploadStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Optimisation des photos..."
+            android:textColor="#FF6B6B"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressUpload"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:indeterminate="false"
+            app:indicatorColor="#FF6B6B"
+            app:trackColor="#DCDDE1"
+            app:trackThickness="6dp"
+            app:trackCornerRadius="4dp" />
+    </LinearLayout>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSubmitAvis"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:layout_marginBottom="16dp"
         android:text="PUBLIER L'AVIS"
         android:textSize="16sp"
         android:textStyle="bold"
         app:cornerRadius="20dp"
         app:backgroundTint="#FF6B6B"
-        app:layout_constraintTop_toBottomOf="@id/tilDesc"
+        app:layout_constraintTop_toBottomOf="@id/layoutUploadProgress"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

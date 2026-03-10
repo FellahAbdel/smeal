@@ -21,6 +21,10 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -227,65 +231,117 @@ public class DetailsFragment extends Fragment {
             }
 
             dialogBinding.btnSubmitAvis.setEnabled(false);
-            Toast.makeText(getContext(), "Publication en cours...", Toast.LENGTH_SHORT).show();
-            uploadPhotosAndSaveAvis(titre, desc, note, dialog, dialogBinding.btnSubmitAvis);
+            dialogBinding.btnAddPhoto.setEnabled(false);
+            dialogBinding.layoutUploadProgress.setVisibility(View.VISIBLE);
+            
+            uploadPhotosAndSaveAvis(titre, desc, note, dialog, dialogBinding);
         });
 
         dialog.show();
     }
 
-    private void uploadPhotosAndSaveAvis(String titre, String desc, int note, BottomSheetDialog dialog, View btnSubmit) {
+    private void uploadPhotosAndSaveAvis(String titre, String desc, int note, BottomSheetDialog dialog, DialogAddAvisBinding dialogBinding) {
         final List<String> finalUrls = Collections.synchronizedList(new ArrayList<>());
         final AtomicBoolean hasError = new AtomicBoolean(false);
         final AtomicInteger processedCount = new AtomicInteger(0);
+        final int totalPhotos = sessionPhotos.size();
         
-        if (sessionPhotos.isEmpty()) {
-            saveAvisToFirestore(titre, desc, note, finalUrls, 0, 0, dialog, btnSubmit);
+        if (totalPhotos == 0) {
+            saveAvisToFirestore(titre, desc, note, finalUrls, 0, 0, dialog, dialogBinding.btnSubmitAvis);
             return;
         }
 
         double lat = sessionPhotos.get(0).lat;
         double lon = sessionPhotos.get(0).lon;
         FirebaseStorage storage = FirebaseStorage.getInstance();
+        
+        // Tableau pour suivre la progression de chaque photo (0 à 100)
+        final long[] progressPerPhoto = new long[totalPhotos];
 
-        for (LocalPhoto lp : sessionPhotos) {
-            try {
-                InputStream inputStream = requireContext().getContentResolver().openInputStream(lp.uri);
-                if (inputStream == null) {
-                    handleUploadError("Erreur : Fichier inaccessible", hasError, processedCount, sessionPhotos.size(), titre, desc, note, finalUrls, lat, lon, dialog, btnSubmit);
-                    continue;
-                }
+        for (int i = 0; i < totalPhotos; i++) {
+            final int index = i;
+            LocalPhoto lp = sessionPhotos.get(i);
+            
+            new Thread(() -> {
+                try {
+                    requireActivity().runOnUiThread(() -> 
+                        dialogBinding.tvUploadStatus.setText("Optimisation de la photo " + (index + 1) + "/" + totalPhotos + "...")
+                    );
 
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                byte[] data = new byte[16384];
-                int nRead;
-                while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-                    buffer.write(data, 0, nRead);
-                }
-                byte[] bytes = buffer.toByteArray();
-                inputStream.close();
-
-                if (bytes.length == 0) {
-                    handleUploadError("Erreur : Photo vide", hasError, processedCount, sessionPhotos.size(), titre, desc, note, finalUrls, lat, lon, dialog, btnSubmit);
-                    continue;
-                }
-
-                String filename = "avis/" + UUID.randomUUID().toString() + ".jpg";
-                StorageReference ref = storage.getReference().child(filename);
-
-                ref.putBytes(bytes).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
-                    if (!hasError.get()) {
-                        finalUrls.add(uri.toString());
-                        checkStatus(hasError, processedCount, sessionPhotos.size(), titre, desc, note, finalUrls, lat, lon, dialog, btnSubmit);
+                    // 1. COMPRESSION
+                    byte[] compressedData = compressImage(lp.uri);
+                    
+                    if (compressedData == null || compressedData.length == 0) {
+                        handleUploadError("Erreur lors de la compression.", hasError, processedCount, totalPhotos, titre, desc, note, finalUrls, lat, lon, dialog, dialogBinding.btnSubmitAvis);
+                        return;
                     }
-                })).addOnFailureListener(e -> {
-                    Log.e(TAG, "Erreur upload Firebase Storage", e);
-                    handleUploadError("Échec de l'envoi d'une photo. L'avis n'a pas été publié.", hasError, processedCount, sessionPhotos.size(), titre, desc, note, finalUrls, lat, lon, dialog, btnSubmit);
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "Erreur lecture fichier", e);
-                handleUploadError("Erreur technique lors de la préparation des photos.", hasError, processedCount, sessionPhotos.size(), titre, desc, note, finalUrls, lat, lon, dialog, btnSubmit);
+
+                    // 2. UPLOAD
+                    String filename = "avis/" + UUID.randomUUID().toString() + ".jpg";
+                    StorageReference ref = storage.getReference().child(filename);
+                    UploadTask uploadTask = ref.putBytes(compressedData);
+
+                    uploadTask.addOnProgressListener(taskSnapshot -> {
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                        progressPerPhoto[index] = (long) progress;
+                        
+                        // Calcul progression globale
+                        long totalProgress = 0;
+                        for (long p : progressPerPhoto) totalProgress += p;
+                        int globalPercent = (int) (totalProgress / totalPhotos);
+
+                        requireActivity().runOnUiThread(() -> {
+                            dialogBinding.progressUpload.setProgress(globalPercent);
+                            dialogBinding.tvUploadStatus.setText("Envoi : " + globalPercent + "% (" + (processedCount.get() + 1) + "/" + totalPhotos + ")");
+                        });
+                    });
+
+                    uploadTask.addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                        if (!hasError.get()) {
+                            finalUrls.add(uri.toString());
+                            checkStatus(hasError, processedCount, totalPhotos, titre, desc, note, finalUrls, lat, lon, dialog, dialogBinding.btnSubmitAvis);
+                        }
+                    })).addOnFailureListener(e -> {
+                        Log.e(TAG, "Erreur upload Firebase", e);
+                        handleUploadError("Échec de l'envoi. Vérifiez votre connexion.", hasError, processedCount, totalPhotos, titre, desc, note, finalUrls, lat, lon, dialog, dialogBinding.btnSubmitAvis);
+                    });
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Erreur thread upload", e);
+                    handleUploadError("Erreur technique.", hasError, processedCount, totalPhotos, titre, desc, note, finalUrls, lat, lon, dialog, dialogBinding.btnSubmitAvis);
+                }
+            }).start();
+        }
+    }
+
+    private byte[] compressImage(Uri uri) {
+        try {
+            InputStream is = requireContext().getContentResolver().openInputStream(uri);
+            Bitmap original = BitmapFactory.decodeStream(is);
+            if (is != null) is.close();
+
+            if (original == null) return null;
+
+            // Redimensionnement max 1280px (suffisant pour mobile)
+            int maxWidth = 1280;
+            int maxHeight = 1280;
+            float ratio = Math.min((float) maxWidth / original.getWidth(), (float) maxHeight / original.getHeight());
+            
+            Bitmap resized = original;
+            if (ratio < 1.0) {
+                resized = Bitmap.createScaledBitmap(original, 
+                    (int) (original.getWidth() * ratio), 
+                    (int) (original.getHeight() * ratio), true);
             }
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            // Compression JPEG à 75% (excellent compromis poids/qualité)
+            resized.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+            return baos.toByteArray();
+
+        } catch (Exception e) {
+            Log.e(TAG, "Erreur compression", e);
+            return null;
         }
     }
 
