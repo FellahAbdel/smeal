@@ -3,4 +3,14 @@
     <string name="title_home">Accueil</string>
     <string name="title_map">Carte</string>
     <string name="search_hint">Rechercher un restaurant...</string>
+    <string name="bienvenue_sur_smeal">Bienvenue sur Smeal</string>
+    <string name="email">Email</string>
+    <string name="mot_de_passe">Mot de passe</string>
+    <string name="se_connecter">Se connecter</string>
+    <string name="cr_er_un_compte">Créer un compte</string>
+    <string name="logo_smeal">Logo Smeal</string>
+    <string name="pas_encore_de_compte_s_inscrire">Pas encore de compte ? S\'inscrire</string>
+    <string name="adresse">Adresse</string>
+    <string name="nom_d_utilisateur">Nom d\'utilisateur</string>
+    <string name="s_inscrire">S\'inscrire</string>
 </resources>
