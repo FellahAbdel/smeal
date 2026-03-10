@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int id = destination.getId();
                 // Masquer pour les détails, la caméra ET l'édition d'image
-                if (id == R.id.detailsFragment || id == R.id.cameraFragment || id == R.id.imageEditFragment) {
+                if (id == R.id.detailsFragment || id == R.id.cameraFragment || id == R.id.imageEditFragment || id == R.id.authFragment || id == R.id.registerFragment) {
                     binding.header.setVisibility(View.GONE);
                     binding.filterScrollView.setVisibility(View.GONE);
                     binding.bottomNavContainer.setVisibility(View.GONE);
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     if (navController.getCurrentDestination() != null) {
                         int id = navController.getCurrentDestination().getId();
                         // Ne pas réafficher si on est sur détails, caméra, édition ou en recherche
-                        if (id != R.id.detailsFragment && id != R.id.cameraFragment && id != R.id.imageEditFragment && !isSearching) {
+                        if (id != R.id.detailsFragment && id != R.id.cameraFragment && id != R.id.imageEditFragment && id != R.id.authFragment && id != R.id.registerFragment && !isSearching) {
                             binding.bottomNavContainer.setVisibility(View.VISIBLE);
                         }
                     }
