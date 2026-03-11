@@ -15,9 +15,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import fr.smeal.databinding.ActivityMainBinding;
 
+import androidx.lifecycle.ViewModelProvider;
+import fr.smeal.ui.home.HomeViewModel;
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private HomeViewModel viewModel;
     private boolean isSearching = false;
 
     @Override
@@ -27,9 +31,36 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
         setupNavigation();
         setupSearchBar();
+        setupFilters();
         setupKeyboardListener();
+    }
+
+    private void setupFilters() {
+        binding.chipGroupFilters.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.chipAll) {
+                viewModel.setSelectedCategory("Tout");
+                viewModel.setMinRating(0.0);
+            } else if (checkedId == R.id.chipTopRated) {
+                viewModel.setSelectedCategory("Tout");
+                viewModel.setMinRating(4.5);
+            } else if (checkedId == R.id.chipItalien) {
+                viewModel.setSelectedCategory("Italien");
+                viewModel.setMinRating(0.0);
+            } else if (checkedId == R.id.chipJaponais) {
+                viewModel.setSelectedCategory("Japonais");
+                viewModel.setMinRating(0.0);
+            } else if (checkedId == R.id.chipBurger) {
+                viewModel.setSelectedCategory("Burger");
+                viewModel.setMinRating(0.0);
+            } else if (checkedId == R.id.chipSante) {
+                viewModel.setSelectedCategory("Santé");
+                viewModel.setMinRating(0.0);
+            }
+        });
     }
 
     private void setupNavigation() {
@@ -46,9 +77,11 @@ public class MainActivity extends AppCompatActivity {
                 // Masquer pour les détails, la caméra ET l'édition d'image
                 if (id == R.id.detailsFragment || id == R.id.cameraFragment || id == R.id.imageEditFragment) {
                     binding.header.setVisibility(View.GONE);
+                    binding.filterScrollView.setVisibility(View.GONE);
                     binding.bottomNavContainer.setVisibility(View.GONE);
                 } else {
                     binding.header.setVisibility(View.VISIBLE);
+                    binding.filterScrollView.setVisibility(View.VISIBLE);
                     // On affiche le footer uniquement si on n'est pas en mode recherche
                     if (!isSearching) {
                         binding.bottomNavContainer.setVisibility(View.VISIBLE);
@@ -104,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 binding.btnClearSearch.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
+                viewModel.setSearchQuery(s.toString());
             }
 
             @Override
@@ -125,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
             binding.etSearch.requestFocus();
             showKeyboard();
         } else {
+            viewModel.setSearchQuery("");
             binding.logo.setVisibility(View.VISIBLE);
             binding.tvAppName.setVisibility(View.VISIBLE);
             binding.btnSearch.setVisibility(View.VISIBLE);

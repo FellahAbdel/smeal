@@ -8,6 +8,7 @@ import java.util.List;
 
 import fr.smeal.data.model.Avis;
 import fr.smeal.data.model.Menu;
+import fr.smeal.data.model.Reservation;
 import fr.smeal.data.model.Restaurant;
 import fr.smeal.utils.FirestoreCallback;
 
@@ -18,6 +19,7 @@ public class RestaurantRepository {
     private final String COLLECTION_RESTAURANTS = "restaurants";
     private final String COLLECTION_MENUS = "menus";
     private final String COLLECTION_AVIS = "avis";
+    private final String COLLECTION_RESERVATIONS = "reservations";
 
     private RestaurantRepository() {
         db = FirebaseFirestore.getInstance();
@@ -107,6 +109,13 @@ public class RestaurantRepository {
     public void addAvis(Avis avis, FirestoreCallback<Void> callback) {
         db.collection(COLLECTION_AVIS)
                 .add(avis)
+                .addOnSuccessListener(documentReference -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void addReservation(Reservation reservation, FirestoreCallback<Void> callback) {
+        db.collection(COLLECTION_RESERVATIONS)
+                .add(reservation)
                 .addOnSuccessListener(documentReference -> callback.onSuccess(null))
                 .addOnFailureListener(callback::onFailure);
     }

@@ -62,6 +62,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
         public void bind(Restaurant restaurant, OnRestaurantClickListener listener) {
             itemRestaurantBinding.tvNom.setText(restaurant.getNom());
             itemRestaurantBinding.tvAdresse.setText(restaurant.getAdresse());
+            itemRestaurantBinding.tvRating.setText(String.valueOf(restaurant.getRating()));
 
             if (restaurant.getImageUrl() != null && !restaurant.getImageUrl().isEmpty()) {
                 Glide.with(itemRestaurantBinding.getRoot().getContext())
