@@ -49,14 +49,24 @@ public class AuthFragment extends Fragment {
         String email = binding.etEmail.getText().toString().trim();
         String password = binding.etPassword.getText().toString().trim();
 
-        if (email.isEmpty() || password.isEmpty()) return;
+        boolean isValid = true;
+        if (email.isEmpty()) {
+            binding.etEmail.setError("Email requis");
+            isValid = false;
+        }
+        if (password.isEmpty()) {
+            binding.etPassword.setError("Mot de passe requis");
+            isValid = false;
+        }
+
+        if (!isValid) return;
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         goToHome();
                     } else {
-                        Toast.makeText(getContext(), "Erreur de connexion", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Erreur de connexion : " + (task.getException() != null ? task.getException().getMessage() : "Inconnue"), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

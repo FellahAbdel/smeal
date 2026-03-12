@@ -41,10 +41,7 @@ public class RegisterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding.btnRegisterSubmit.setOnClickListener(v -> registerUser());
-
-        binding.btnRegisterSubmit.setOnClickListener(v ->
-                Navigation.findNavController(v).navigateUp());
-    };
+    }
 
     private void registerUser() {
         String username = Objects.requireNonNull(binding.etUsername.getText()).toString().trim();
@@ -52,10 +49,28 @@ public class RegisterFragment extends Fragment {
         String password = Objects.requireNonNull(binding.etPassword.getText()).toString().trim();
         String address = Objects.requireNonNull(binding.etAddress.getText()).toString().trim();
 
-        if (email.isEmpty() || password.isEmpty() || username.isEmpty() || address.isEmpty()) {
-            Toast.makeText(getContext(), "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
-            return;
+        boolean isValid = true;
+        if (username.isEmpty()) {
+            binding.etUsername.setError("Nom d'utilisateur requis");
+            isValid = false;
         }
+        if (email.isEmpty()) {
+            binding.etEmail.setError("Email requis");
+            isValid = false;
+        }
+        if (password.isEmpty()) {
+            binding.etPassword.setError("Mot de passe requis");
+            isValid = false;
+        } else if (password.length() < 6) {
+            binding.etPassword.setError("Le mot de passe doit contenir au moins 6 caractères");
+            isValid = false;
+        }
+        if (address.isEmpty()) {
+            binding.etAddress.setError("Adresse requise");
+            isValid = false;
+        }
+
+        if (!isValid) return;
 
         // 1. Création du compte Auth
         mAuth.createUserWithEmailAndPassword(email, password)
