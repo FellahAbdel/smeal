@@ -1,6 +1,7 @@
 package fr.smeal.ui.auth;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,6 +73,8 @@ public class RegisterFragment extends Fragment {
 
         if (!isValid) return;
 
+        setLoading(true);
+
         // 1. Création du compte Auth
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
@@ -80,6 +83,7 @@ public class RegisterFragment extends Fragment {
                         String uid = mAuth.getCurrentUser().getUid();
                         saveUserToFirestore(uid, username, email, address);
                     } else {
+                        setLoading(false);
                         Toast.makeText(getContext(), "Erreur Auth : " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
@@ -96,12 +100,19 @@ public class RegisterFragment extends Fragment {
         // 3. Sauvegarde via le service
         utilisateurService.creerProfilUtilisateur(uid, nouvelUtilisateur)
                 .addOnCompleteListener(task -> {
+                    setLoading(false);
                     if (task.isSuccessful()) {
                         Toast.makeText(getContext(), "Compte créé avec succès !", Toast.LENGTH_SHORT).show();
                         Navigation.findNavController(requireView()).navigate(R.id.action_registerFragment_to_homeFragment);
                     } else {
                         Toast.makeText(getContext(), "Erreur BDD : " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Log.e("RegisterFragment", "Erreur BDD", task.getException());
                     }
                 });
+    }
+
+    private void setLoading(boolean isLoading) {
+        binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        binding.btnRegisterSubmit.setEnabled(!isLoading);
     }
 }

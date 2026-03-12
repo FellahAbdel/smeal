@@ -75,10 +75,16 @@ public class MainActivity extends AppCompatActivity {
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int id = destination.getId();
                 // Masquer pour les détails, la caméra ET l'édition d'image
-                if (id == R.id.detailsFragment || id == R.id.cameraFragment || id == R.id.imageEditFragment || id == R.id.authFragment || id == R.id.registerFragment) {
+                if (id == R.id.detailsFragment || id == R.id.cameraFragment || id == R.id.imageEditFragment || id == R.id.authFragment || id == R.id.registerFragment || id == R.id.accountFragment) {
                     binding.header.setVisibility(View.GONE);
                     binding.filterScrollView.setVisibility(View.GONE);
-                    binding.bottomNavContainer.setVisibility(View.GONE);
+                    
+                    // On garde le footer pour accountFragment, mais on le cache pour les autres
+                    if (id == R.id.accountFragment) {
+                        binding.bottomNavContainer.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.bottomNavContainer.setVisibility(View.GONE);
+                    }
                 } else {
                     binding.header.setVisibility(View.VISIBLE);
                     binding.filterScrollView.setVisibility(View.VISIBLE);

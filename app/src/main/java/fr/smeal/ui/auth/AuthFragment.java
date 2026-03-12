@@ -21,11 +21,6 @@ public class AuthFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-
-        // Redirection automatique si déjà connecté
-        if (mAuth.getCurrentUser() != null) {
-            goToHome();
-        }
     }
 
     @Nullable
@@ -38,6 +33,13 @@ public class AuthFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Redirection automatique si déjà connecté
+        if (mAuth.getCurrentUser() != null) {
+            setLoading(true);
+            goToHome();
+            return;
+        }
 
         binding.btnLogin.setOnClickListener(v -> loginUser());
         binding.btnRegister.setOnClickListener(v ->
@@ -61,14 +63,23 @@ public class AuthFragment extends Fragment {
 
         if (!isValid) return;
 
+        setLoading(true);
+
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
+                    setLoading(false);
                     if (task.isSuccessful()) {
                         goToHome();
                     } else {
                         Toast.makeText(getContext(), "Erreur de connexion : " + (task.getException() != null ? task.getException().getMessage() : "Inconnue"), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void setLoading(boolean isLoading) {
+        binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        binding.btnLogin.setEnabled(!isLoading);
+        binding.btnRegister.setEnabled(!isLoading);
     }
 
     private void goToHome() {
