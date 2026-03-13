@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.shimmer)
+    implementation(libs.lottie)
 
     // --- Navigation ---
     implementation(libs.navigation.fragment)

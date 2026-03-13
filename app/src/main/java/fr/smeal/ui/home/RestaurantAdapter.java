@@ -20,7 +20,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
     private OnRestaurantClickListener listener;
 
     public interface OnRestaurantClickListener {
-        void onRestaurantClick(Restaurant restaurant);
+        void onRestaurantClick(Restaurant restaurant, android.widget.ImageView imageView);
     }
 
     public void setOnRestaurantClickListener(OnRestaurantClickListener listener) {
@@ -64,6 +64,9 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
             itemRestaurantBinding.tvAdresse.setText(restaurant.getAdresse());
             itemRestaurantBinding.tvRating.setText(String.valueOf(restaurant.getRating()));
 
+            // TransitionName unique basé sur l'ID du restaurant
+            itemRestaurantBinding.ivRestaurant.setTransitionName("image_" + restaurant.getId());
+
             if (restaurant.getImageUrl() != null && !restaurant.getImageUrl().isEmpty()) {
                 Glide.with(itemRestaurantBinding.getRoot().getContext())
                         .load(restaurant.getImageUrl())
@@ -73,7 +76,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
-                    listener.onRestaurantClick(restaurant);
+                    listener.onRestaurantClick(restaurant, itemRestaurantBinding.ivRestaurant);
                 }
             });
         }

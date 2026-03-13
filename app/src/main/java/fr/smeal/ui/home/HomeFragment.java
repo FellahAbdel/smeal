@@ -20,6 +20,8 @@ import fr.smeal.data.model.Restaurant;
 import fr.smeal.R;
 import fr.smeal.databinding.FragmentHomeBinding;
 
+import androidx.navigation.fragment.FragmentNavigator;
+
 public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
@@ -42,11 +44,19 @@ public class HomeFragment extends Fragment {
         adapter = new RestaurantAdapter();
         fragmentHomeBinding.recyclerView.setAdapter(adapter);
 
-        // Configuration du clic sur un restaurant pour aller vers les détails
-        adapter.setOnRestaurantClickListener(restaurant -> {
+        // Configuration du clic sur un restaurant pour aller vers les détails avec transition d'élément partagé
+        adapter.setOnRestaurantClickListener((restaurant, imageView) -> {
             Bundle args = new Bundle();
             args.putString("restaurantId", restaurant.getId());
-            Navigation.findNavController(view).navigate(R.id.detailsFragment, args);
+            
+            // On utilise le même nom unique que dans l'adapter
+            String transitionName = "image_" + restaurant.getId();
+            
+            FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
+                    .addSharedElement(imageView, transitionName)
+                    .build();
+
+            Navigation.findNavController(view).navigate(R.id.detailsFragment, args, null, extras);
         });
 
         // 2. Initialisation du ViewModel (Shared with Activity for Search)

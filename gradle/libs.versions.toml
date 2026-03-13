@@ -19,6 +19,7 @@ firebaseBom = "34.8.0"
 camerax = "1.5.2"
 glide = "5.0.5"
 shimmer = "0.5.0"
+lottie = "6.6.2"
 # Indispensable pour CameraX en Java (Async)
 guava = "33.5.0-android"
 concurrentFutures = "1.3.0"
@@ -35,6 +36,8 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 
 # Shimmer
 shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "shimmer" }
+# Lottie
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 
 # --- NOUVELLES LIBRAIRIES A AJOUTER ---
 

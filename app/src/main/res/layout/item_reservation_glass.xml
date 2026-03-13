@@ -3,46 +3,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="12dp"
     android:background="@drawable/glass_background"
-    android:padding="12dp">
+    android:elevation="6dp"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/tvRestoName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Restaurant"
-        android:textColor="@color/text_primary"
+        android:textAppearance="@style/TextAppearance.Smeal.Headline"
         android:textSize="14sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/tvNbPers"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="Restaurant" />
 
     <TextView
         android:id="@+id/tvDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:text="12/03/2026"
-        android:textColor="@color/text_secondary"
-        android:textSize="11sp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvRestoName" />
+        app:layout_constraintTop_toBottomOf="@id/tvRestoName"
+        android:text="12/03/2026" />
 
     <TextView
         android:id="@+id/tvNbPers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/glass_chip_background"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="2dp"
-        android:text="2 pers."
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
         android:textColor="@color/liquid_primary"
-        android:textSize="10sp"
+        android:textSize="11sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="2 pers." />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
