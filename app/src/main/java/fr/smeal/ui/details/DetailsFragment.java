@@ -48,6 +48,10 @@ import fr.smeal.databinding.FragmentDetailsBinding;
 import fr.smeal.ui.home.HomeViewModel;
 import fr.smeal.utils.FirestoreCallback;
 
+import com.google.firebase.auth.FirebaseAuth;
+import fr.smeal.data.model.Utilisateur;
+import fr.smeal.data.service.UtilisateurService;
+
 public class DetailsFragment extends Fragment {
 
     private static final String TAG = "DetailsFragment";
@@ -57,6 +61,9 @@ public class DetailsFragment extends Fragment {
     private AvisAdapter avisAdapter;
     private String currentRestaurantId;
     private String currentRestaurantName;
+    private FirebaseAuth mAuth;
+    private UtilisateurService utilisateurService;
+    private Utilisateur currentUserProfile;
     
     private static class LocalPhoto {
         Uri uri;
@@ -77,6 +84,10 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mAuth = FirebaseAuth.getInstance();
+        utilisateurService = new UtilisateurService();
+        loadCurrentUserProfile();
 
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         setupRecyclerViews();
@@ -112,6 +123,17 @@ public class DetailsFragment extends Fragment {
         binding.btnDonnerAvis.setOnClickListener(v -> showAddAvisDialog());
         binding.btnReserver.setOnClickListener(v -> showReservationDialog());
         binding.toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+    }
+
+    private void loadCurrentUserProfile() {
+        if (mAuth.getCurrentUser() != null) {
+            String uid = mAuth.getCurrentUser().getUid();
+            utilisateurService.getProfilUtilisateur(uid).addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult() != null) {
+                    currentUserProfile = task.getResult();
+                }
+            });
+        }
     }
 
     private void setupRecyclerViews() {
@@ -172,6 +194,11 @@ public class DetailsFragment extends Fragment {
         });
 
         resBinding.btnConfirmRes.setOnClickListener(v -> {
+            if (currentUserProfile == null) {
+                Toast.makeText(getContext(), "Chargement de votre profil en cours...", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             String dateStr = resBinding.btnPickDate.getText().toString();
             String timeStr = resBinding.btnPickTime.getText().toString();
 
@@ -185,8 +212,9 @@ public class DetailsFragment extends Fragment {
             res.setNomRestaurant(currentRestaurantName);
             res.setDate(dateStr + " à " + timeStr);
             res.setNbPersonnes(nbPeople[0]);
-            res.setPrenomUtilisateur("Utilisateur");
-            res.setNomUtilisateur("Smeal");
+            res.setIdUtilisateur(currentUserProfile.getId());
+            res.setPrenomUtilisateur(currentUserProfile.getPrenom());
+            res.setNomUtilisateur(currentUserProfile.getNom());
 
             RestaurantRepository.getInstance().addReservation(res, new FirestoreCallback<Void>() {
                 @Override
@@ -364,6 +392,12 @@ public class DetailsFragment extends Fragment {
     }
 
     private void saveAvisToFirestore(String titre, String desc, int note, List<String> urls, double lat, double lon, BottomSheetDialog dialog, View btnSubmit) {
+        if (currentUserProfile == null) {
+            Toast.makeText(getContext(), "Chargement du profil en cours...", Toast.LENGTH_SHORT).show();
+            btnSubmit.setEnabled(true);
+            return;
+        }
+
         Avis avis = new Avis();
         avis.setIdRestaurant(currentRestaurantId);
         avis.setTitre(titre);
@@ -372,8 +406,9 @@ public class DetailsFragment extends Fragment {
         avis.setImageUrls(urls);
         avis.setLatitude(lat);
         avis.setLongitude(lon);
-        avis.setPrenomUtilisateur("Utilisateur");
-        avis.setNomUtilisateur("Smeal");
+        avis.setIdUtilisateur(currentUserProfile.getId());
+        avis.setPrenomUtilisateur(currentUserProfile.getPrenom());
+        avis.setNomUtilisateur(currentUserProfile.getNom());
 
         RestaurantRepository.getInstance().addAvis(avis, new FirestoreCallback<Void>() {
             @Override

@@ -2,6 +2,10 @@ package fr.smeal.data.service;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.smeal.data.model.Avis;
 import fr.smeal.data.model.Utilisateur;
@@ -25,6 +29,18 @@ public class AvisService {
         }
 
         return repository.saveAvis(uid, avis);
+    }
+
+    public Task<List<Avis>> getAvisByUser(String userId) {
+        return repository.getAvisByUser(userId).continueWith(task -> {
+            List<Avis> avisList = new ArrayList<>();
+            if (task.isSuccessful() && task.getResult() != null) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    avisList.add(document.toObject(Avis.class));
+                }
+            }
+            return avisList;
+        });
     }
 
     public Task<Avis> getAvisUtilisateur(String uid) {

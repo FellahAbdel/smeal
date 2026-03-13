@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.auth)
 
     // --- CameraX ---
     implementation(libs.camera.core)

@@ -11,6 +11,9 @@ public class Avis {
     @Exclude
     private String id;
     private String idRestaurant;
+
+    private String idUtilisateur;
+
     private String nomUtilisateur;
     private String prenomUtilisateur;
     private String titre;
@@ -48,6 +51,14 @@ public class Avis {
 
     public void setIdRestaurant(String idRestaurant) {
         this.idRestaurant = idRestaurant;
+    }
+
+    public String getIdUtilisateur() {
+        return idUtilisateur;
+    }
+
+    public void setIdUtilisateur(String idUtilisateur) {
+        this.idUtilisateur = idUtilisateur;
     }
 
     public String getNomUtilisateur() {

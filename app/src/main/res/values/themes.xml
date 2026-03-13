@@ -12,7 +12,19 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">#F8F9FA</item>
         <item name="android:windowLightStatusBar">true</item>
+        <!-- Couleurs pour les champs de saisie (TextInputLayout) -->
+        <item name="colorOnSurface">#636E72</item> <!-- Couleur de la bordure inactive et du hint -->
         <!-- Customize your theme here. -->
+    </style>
+
+    <!-- Style spécifique pour forcer la visibilité des OutlinedBox -->
+    <style name="Widget.Smeal.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/input_stroke_color</item>
+        <item name="hintTextColor">@color/liquid_primary</item>
+        <item name="android:textColorHint">#B2BEC3</item>
+        <item name="passwordToggleTint">@color/text_secondary</item>
+        <!-- Optionnel: Augmenter un peu l'épaisseur quand c'est focalisé pour que ce soit plus visible -->
+        <item name="boxStrokeWidthFocused">2dp</item>
     </style>
 
     <style name="CircleImage" parent="">

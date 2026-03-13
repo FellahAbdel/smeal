@@ -75,10 +75,16 @@ public class MainActivity extends AppCompatActivity {
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int id = destination.getId();
                 // Masquer pour les détails, la caméra ET l'édition d'image
-                if (id == R.id.detailsFragment || id == R.id.cameraFragment || id == R.id.imageEditFragment) {
+                if (id == R.id.detailsFragment || id == R.id.cameraFragment || id == R.id.imageEditFragment || id == R.id.authFragment || id == R.id.registerFragment || id == R.id.accountFragment) {
                     binding.header.setVisibility(View.GONE);
                     binding.filterScrollView.setVisibility(View.GONE);
-                    binding.bottomNavContainer.setVisibility(View.GONE);
+                    
+                    // On garde le footer pour accountFragment, mais on le cache pour les autres
+                    if (id == R.id.accountFragment) {
+                        binding.bottomNavContainer.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.bottomNavContainer.setVisibility(View.GONE);
+                    }
                 } else {
                     binding.header.setVisibility(View.VISIBLE);
                     binding.filterScrollView.setVisibility(View.VISIBLE);
@@ -108,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     if (navController.getCurrentDestination() != null) {
                         int id = navController.getCurrentDestination().getId();
                         // Ne pas réafficher si on est sur détails, caméra, édition ou en recherche
-                        if (id != R.id.detailsFragment && id != R.id.cameraFragment && id != R.id.imageEditFragment && !isSearching) {
+                        if (id != R.id.detailsFragment && id != R.id.cameraFragment && id != R.id.imageEditFragment && id != R.id.authFragment && id != R.id.registerFragment && !isSearching) {
                             binding.bottomNavContainer.setVisibility(View.VISIBLE);
                         }
                     }
