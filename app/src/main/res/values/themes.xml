@@ -13,8 +13,31 @@
         <item name="android:statusBarColor">#F8F9FA</item>
         <item name="android:windowLightStatusBar">true</item>
         <!-- Couleurs pour les champs de saisie (TextInputLayout) -->
-        <item name="colorOnSurface">#636E72</item> <!-- Couleur de la bordure inactive et du hint -->
-        <!-- Customize your theme here. -->
+        <item name="colorOnSurface">#636E72</item>
+
+        <!-- TYPOGRAPHIE PAR DÉFAUT -->
+        <item name="fontFamily">@font/poppins</item>
+        <item name="android:fontFamily">@font/poppins</item>
+    </style>
+
+    <!-- Styles de texte réutilisables -->
+    <style name="TextAppearance.Smeal.Headline" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="fontFamily">@font/poppins</item>
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="TextAppearance.Smeal.Body" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/poppins</item>
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <style name="TextAppearance.Smeal.Caption" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="fontFamily">@font/poppins</item>
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textColor">#B2BEC3</item>
     </style>
 
     <!-- Style spécifique pour forcer la visibilité des OutlinedBox -->
