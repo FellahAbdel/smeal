@@ -46,6 +46,8 @@
         <item name="hintTextColor">@color/liquid_primary</item>
         <item name="android:textColorHint">#B2BEC3</item>
         <item name="passwordToggleTint">@color/text_secondary</item>
+        <!-- Forcer la couleur du texte de saisie -->
+        <item name="android:textColor">@color/text_primary</item>
         <!-- Optionnel: Augmenter un peu l'épaisseur quand c'est focalisé pour que ce soit plus visible -->
         <item name="boxStrokeWidthFocused">2dp</item>
     </style>

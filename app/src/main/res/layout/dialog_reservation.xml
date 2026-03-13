@@ -22,9 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Réserver une table"
-        android:textColor="#2D3436"
+        android:textAppearance="@style/TextAppearance.Smeal.Headline"
         android:textSize="22sp"
-        android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/vHandleRes" />
 
     <!-- Sélection Date -->
@@ -36,13 +35,15 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
         android:text="Choisir la date"
-        android:textColor="#2D3436"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textColor="@color/text_primary"
         app:icon="@drawable/ic_today"
-        app:iconTint="#FF6B6B"
+        app:iconTint="@color/liquid_primary"
         app:layout_constraintEnd_toStartOf="@+id/btnPickTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitleRes"
-        app:strokeColor="#DCDDE1" />
+        app:strokeColor="#DCDDE1"
+        app:cornerRadius="16dp" />
 
         <!-- Sélection Heure -->
         <com.google.android.material.button.MaterialButton
@@ -52,11 +53,11 @@
         android:layout_height="60dp"
         android:layout_marginStart="8dp"
         android:text="Heure"
-        android:textColor="#2D3436"
-        android:textStyle="bold"
-        app:cornerRadius="16sp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textColor="@color/text_primary"
+        app:cornerRadius="16dp"
         app:icon="@drawable/ic_time"
-        app:iconTint="#FF6B6B"
+        app:iconTint="@color/liquid_primary"
         app:layout_constraintBottom_toBottomOf="@id/btnPickDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnPickDate"
@@ -70,9 +71,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Nombre de convives"
-        android:textColor="#2D3436"
+        android:textAppearance="@style/TextAppearance.Smeal.Headline"
         android:textSize="16sp"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnPickDate" />
 
@@ -93,7 +93,7 @@
             android:layout_height="48dp"
             android:text="-"
             android:textSize="20sp"
-            android:textColor="#FF6B6B" />
+            android:textColor="@color/liquid_primary" />
 
         <TextView
             android:id="@+id/tvNbPeople"
@@ -101,9 +101,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="2"
-            android:textColor="#2D3436"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Smeal.Headline"
+            android:textSize="18sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPlusPeople"
@@ -112,7 +111,7 @@
             android:layout_height="48dp"
             android:text="+"
             android:textSize="20sp"
-            android:textColor="#FF6B6B" />
+            android:textColor="@color/liquid_primary" />
     </LinearLayout>
 
     <!-- Bouton Confirmation -->
@@ -125,8 +124,9 @@
         android:text="CONFIRMER LA RÉSERVATION"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:backgroundTint="#FF6B6B"
+        app:backgroundTint="@color/liquid_primary"
         app:cornerRadius="20dp"
+        android:stateListAnimator="@animator/scale_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvLabelPeople" />
 
