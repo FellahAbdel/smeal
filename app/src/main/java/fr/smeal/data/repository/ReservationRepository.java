@@ -31,7 +31,6 @@ public class ReservationRepository {
 
     public Task<QuerySnapshot> getReservationsByUser(String userId) {
         return collectionRef.whereEqualTo("idUtilisateur", userId)
-                .orderBy("date", Query.Direction.DESCENDING)
                 .limit(5)
                 .get();
     }

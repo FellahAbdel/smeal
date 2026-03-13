@@ -45,14 +45,18 @@ public class RegisterFragment extends Fragment {
     }
 
     private void registerUser() {
-        String username = Objects.requireNonNull(binding.etUsername.getText()).toString().trim();
+        String firstName = Objects.requireNonNull(binding.etFirstName.getText()).toString().trim();
+        String lastName = Objects.requireNonNull(binding.etLastName.getText()).toString().trim();
         String email = Objects.requireNonNull(binding.etEmail.getText()).toString().trim();
         String password = Objects.requireNonNull(binding.etPassword.getText()).toString().trim();
-        String address = Objects.requireNonNull(binding.etAddress.getText()).toString().trim();
 
         boolean isValid = true;
-        if (username.isEmpty()) {
-            binding.etUsername.setError("Nom d'utilisateur requis");
+        if (firstName.isEmpty()) {
+            binding.etFirstName.setError("Prénom requis");
+            isValid = false;
+        }
+        if (lastName.isEmpty()) {
+            binding.etLastName.setError("Nom requis");
             isValid = false;
         }
         if (email.isEmpty()) {
@@ -66,10 +70,6 @@ public class RegisterFragment extends Fragment {
             binding.etPassword.setError("Le mot de passe doit contenir au moins 6 caractères");
             isValid = false;
         }
-        if (address.isEmpty()) {
-            binding.etAddress.setError("Adresse requise");
-            isValid = false;
-        }
 
         if (!isValid) return;
 
@@ -81,7 +81,7 @@ public class RegisterFragment extends Fragment {
                     if (task.isSuccessful()) {
                         assert mAuth.getCurrentUser() != null;
                         String uid = mAuth.getCurrentUser().getUid();
-                        saveUserToFirestore(uid, username, email, address);
+                        saveUserToFirestore(uid, firstName, lastName, email);
                     } else {
                         setLoading(false);
                         Toast.makeText(getContext(), "Erreur Auth : " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
@@ -89,13 +89,14 @@ public class RegisterFragment extends Fragment {
                 });
     }
 
-    private void saveUserToFirestore(String uid, String username, String email, String address) {
+    private void saveUserToFirestore(String uid, String firstName, String lastName, String email) {
         // 2. Création de l'objet Utilisateur (selon le modèle de votre projet)
         Utilisateur nouvelUtilisateur = new Utilisateur();
         nouvelUtilisateur.setId(uid);
-        nouvelUtilisateur.setNom(username); // On utilise username pour le nom ici
+        nouvelUtilisateur.setPrenom(firstName);
+        nouvelUtilisateur.setNom(lastName);
         nouvelUtilisateur.setEmail(email);
-        nouvelUtilisateur.setAdresse(address);
+        nouvelUtilisateur.setPoints(0);
 
         // 3. Sauvegarde via le service
         utilisateurService.creerProfilUtilisateur(uid, nouvelUtilisateur)

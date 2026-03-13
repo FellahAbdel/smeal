@@ -14,6 +14,8 @@ import fr.smeal.data.model.Utilisateur;
 import fr.smeal.data.service.UtilisateurService;
 import fr.smeal.databinding.FragmentAccountBinding;
 
+import fr.smeal.data.model.Avis;
+import fr.smeal.data.service.AvisService;
 import fr.smeal.data.model.Reservation;
 import fr.smeal.data.service.ReservationService;
 import fr.smeal.databinding.ItemReservationGlassBinding;
@@ -24,6 +26,7 @@ public class AccountFragment extends Fragment {
     private FirebaseAuth mAuth;
     private UtilisateurService utilisateurService;
     private ReservationService reservationService;
+    private AvisService avisService;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,6 +34,7 @@ public class AccountFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         utilisateurService = new UtilisateurService();
         reservationService = new ReservationService();
+        avisService = new AvisService();
     }
 
     @Nullable
@@ -46,6 +50,7 @@ public class AccountFragment extends Fragment {
         
         loadUserProfile();
         loadUserReservations();
+        loadUserAvis();
 
         binding.btnLogout.setOnClickListener(v -> logout());
         binding.btnEditProfile.setOnClickListener(v -> {
@@ -68,9 +73,24 @@ public class AccountFragment extends Fragment {
     private void loadUserReservations() {
         if (mAuth.getCurrentUser() != null) {
             String uid = mAuth.getCurrentUser().getUid();
+            android.util.Log.d("AccountFragment", "Chargement des résas pour UID: " + uid);
             reservationService.getReservationsByUser(uid).addOnCompleteListener(task -> {
                 if (task.isSuccessful() && task.getResult() != null) {
+                    android.util.Log.d("AccountFragment", "Résas trouvées: " + task.getResult().size());
                     displayReservations(task.getResult());
+                } else {
+                    android.util.Log.e("AccountFragment", "Erreur récup résas", task.getException());
+                }
+            });
+        }
+    }
+
+    private void loadUserAvis() {
+        if (mAuth.getCurrentUser() != null) {
+            String uid = mAuth.getCurrentUser().getUid();
+            avisService.getAvisByUser(uid).addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult() != null) {
+                    binding.tvStatReviews.setText(String.valueOf(task.getResult().size()));
                 }
             });
         }
