@@ -52,6 +52,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import fr.smeal.data.model.Utilisateur;
 import fr.smeal.data.service.UtilisateurService;
 
+import androidx.transition.TransitionInflater;
+
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import android.graphics.drawable.Drawable;
+
 public class DetailsFragment extends Fragment {
 
     private static final String TAG = "DetailsFragment";
@@ -64,20 +72,29 @@ public class DetailsFragment extends Fragment {
     private FirebaseAuth mAuth;
     private UtilisateurService utilisateurService;
     private Utilisateur currentUserProfile;
-    
+
     private static class LocalPhoto {
-        Uri uri;
+        android.net.Uri uri;
         double lat, lon;
-        LocalPhoto(Uri uri, double lat, double lon) {
+        LocalPhoto(android.net.Uri uri, double lat, double lon) {
             this.uri = uri; this.lat = lat; this.lon = lon;
         }
     }
-    
+
     private final List<LocalPhoto> sessionPhotos = new ArrayList<>();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setSharedElementEnterTransition(TransitionInflater.from(requireContext())
+                .inflateTransition(android.R.transition.move));
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentDetailsBinding.inflate(inflater, container, false);
+        // On met la transition en pause le temps que Glide charge l'image
+        postponeEnterTransition();
         return binding.getRoot();
     }
 
@@ -94,6 +111,9 @@ public class DetailsFragment extends Fragment {
 
         if (getArguments() != null) {
             currentRestaurantId = getArguments().getString("restaurantId");
+            // Appliquer le nom de transition unique reçu
+            binding.ivDetails.setTransitionName("image_" + currentRestaurantId);
+
             viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
                 for (Restaurant r : restaurants) {
                     if (r.getId().equals(currentRestaurantId)) {
@@ -151,8 +171,27 @@ public class DetailsFragment extends Fragment {
         binding.tvAdresseDetails.setText(r.getAdresse());
         binding.tvCuisineType.setText(r.getCuisineType());
         binding.tvRatingDetails.setText(String.format(Locale.getDefault(), "%.1f", r.getRating()));
+        
         if (r.getImageUrl() != null && !r.getImageUrl().isEmpty()) {
-            Glide.with(this).load(r.getImageUrl()).centerCrop().into(binding.ivDetails);
+            Glide.with(this)
+                .load(r.getImageUrl())
+                .centerCrop()
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        startPostponedEnterTransition();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        startPostponedEnterTransition();
+                        return false;
+                    }
+                })
+                .into(binding.ivDetails);
+        } else {
+            startPostponedEnterTransition();
         }
     }
 

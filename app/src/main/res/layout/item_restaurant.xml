@@ -7,7 +7,10 @@
     android:layout_marginBottom="24dp"
     android:padding="12dp"
     android:background="@drawable/glass_background"
-    android:elevation="4dp">
+    android:elevation="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:stateListAnimator="@animator/scale_button">
 
     <!-- Image du restaurant (Style Uber Eats : Large) -->
     <androidx.cardview.widget.CardView
@@ -23,7 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_image" />
+            android:src="@drawable/ic_image"
+            android:transitionName="restaurant_image" />
     </androidx.cardview.widget.CardView>
 
     <!-- Nom du Restaurant -->
@@ -31,11 +35,10 @@
         android:id="@+id/tvNom"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
         android:text="Nom du Restaurant"
-        android:textColor="#2D3436"
+        android:textAppearance="@style/TextAppearance.Smeal.Headline"
         android:textSize="18sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/tvRating"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardImage" />
@@ -45,14 +48,16 @@
         android:id="@+id/tvRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#4DFFFFFF"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="4dp"
+        android:background="@drawable/glass_chip_background"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="6dp"
         tools:text="4.5"
         android:drawableStart="@drawable/ic_star"
-        android:drawablePadding="4dp"
-        android:textColor="#2D3436"
+        android:drawablePadding="6dp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@id/tvNom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvNom" />
@@ -62,10 +67,10 @@
         android:id="@+id/tvAdresse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="4dp"
         android:text="Frais de livraison : 0,99 € • 20-30 min"
-        android:textColor="#636E72"
-        android:textSize="14sp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textSize="13sp"
         app:layout_constraintTop_toBottomOf="@id/tvNom" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

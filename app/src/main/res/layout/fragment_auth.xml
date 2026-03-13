@@ -6,42 +6,47 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center"
-    android:background="#F4F1F1">
+    android:background="@drawable/main_gradient_background">
 
-    <!-- Logo -->
     <!-- Logo Smeal arrondi et remonté -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivLogo"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:layout_marginTop="-60dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="-40dp"
         android:layout_marginBottom="32dp"
         android:scaleType="centerCrop"
         android:src="@drawable/logo_smeal"
         app:shapeAppearanceOverlay="@style/CircleImage"
+        android:elevation="8dp"
         android:contentDescription="@string/logo_smeal" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/bienvenue_sur_smeal"
-        android:textSize="26sp"
-        android:textColor="#2D3436"
-        android:textStyle="bold"
-        android:layout_marginBottom="32dp"/>
+        android:textAppearance="@style/TextAppearance.Smeal.Headline"
+        android:textSize="24sp"
+        android:layout_marginBottom="32dp"
+        android:textAlignment="center"/>
 
     <!-- Champs de saisie -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        style="@style/Widget.Smeal.TextInputLayout.OutlinedBox">
+        android:layout_marginBottom="16dp"
+        style="@style/Widget.Smeal.TextInputLayout.OutlinedBox"
+        app:boxCornerRadiusTopStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusBottomEnd="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/email"
+            android:textAppearance="@style/TextAppearance.Smeal.Body"
             android:textColor="@color/text_primary"
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -49,27 +54,37 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="32dp"
         style="@style/Widget.Smeal.TextInputLayout.OutlinedBox"
-        app:passwordToggleEnabled="true">
+        app:passwordToggleEnabled="true"
+        app:boxCornerRadiusTopStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusBottomEnd="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/mot_de_passe"
+            android:textAppearance="@style/TextAppearance.Smeal.Body"
             android:textColor="@color/text_primary"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Boutons -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="60dp"
         android:text="@string/se_connecter"
         android:textAllCaps="false"
-        app:cornerRadius="12dp" />
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:backgroundTint="@color/liquid_primary"
+        app:cornerRadius="16dp"
+        android:elevation="8dp"
+        android:stateListAnimator="@animator/scale_button" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -78,13 +93,15 @@
         android:layout_marginTop="16dp"
         android:visibility="gone" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRegister"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:text="@string/pas_encore_de_compte_s_inscrire"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textColor="@color/liquid_primary"
         android:textAllCaps="false" />
 
 </LinearLayout>

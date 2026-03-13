@@ -6,16 +6,15 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
     android:background="@drawable/glass_background"
-    android:elevation="4dp"
+    android:elevation="6dp"
     android:padding="16dp">
 
     <TextView
         android:id="@+id/tvUserAvis"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="#2D3436"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.Smeal.Headline"
+        android:textSize="15sp"
         app:layout_constraintEnd_toStartOf="@id/tvNoteAvis"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -25,14 +24,19 @@
         android:id="@+id/tvNoteAvis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#FF6B6B"
+        android:background="@drawable/glass_chip_background"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textColor="@color/liquid_primary"
+        android:textSize="13sp"
         android:textStyle="bold"
         android:drawableStart="@drawable/ic_star"
         android:drawablePadding="4dp"
         app:layout_constraintBottom_toBottomOf="@id/tvUserAvis"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvUserAvis"
-        app:drawableTint="#FF6B6B"
+        app:drawableTint="@color/liquid_primary"
         tools:text="5" />
 
     <TextView
@@ -40,8 +44,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:textColor="#2D3436"
-        android:textSize="14sp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textSize="13sp"
         android:textStyle="italic"
         app:layout_constraintTop_toBottomOf="@id/tvUserAvis"
         tools:text="Excellente expérience !" />
@@ -51,8 +55,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textColor="#636E72"
-        android:textSize="14sp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textSize="13sp"
         app:layout_constraintTop_toBottomOf="@id/tvTitreAvis"
         tools:text="Le cadre est magnifique et la nourriture est délicieuse." />
 
