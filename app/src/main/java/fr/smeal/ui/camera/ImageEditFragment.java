@@ -84,19 +84,43 @@ public class ImageEditFragment extends Fragment implements SensorEventListener {
     }
 
     private void setupStickers() {
-        int[] stickerRes = {android.R.drawable.btn_star_big_on, android.R.drawable.ic_menu_gallery, android.R.drawable.ic_menu_send};
+        // Liste de sticker à afficher (stickers dans res/drawable)
+        int[] stickerRes = {
+                R.drawable.boulanger,
+                R.drawable.burger,
+                R.drawable.coeur,
+                R.drawable.nouille,
+                R.drawable.nourriture_americaine,
+                R.drawable.nourriture_saine,
+                R.drawable.pizza
+        };
+
+        binding.stickerContainer.removeAllViews(); // On vide au cas où
+
         for (int res : stickerRes) {
             ImageView iv = new ImageView(getContext());
-            iv.setLayoutParams(new LinearLayout.LayoutParams(150, 150));
-            iv.setPadding(10, 10, 10, 10);
+
+            // Taille et marges
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(180, 180);
+            params.setMargins(16, 8, 16, 8);
+            iv.setLayoutParams(params);
+
+            iv.setPadding(12, 12, 12, 12);
             iv.setImageResource(res);
+
             iv.setOnClickListener(v -> {
                 Bitmap stickerBitmap = BitmapFactory.decodeResource(getResources(), res);
                 binding.photoEditorView.addSticker(stickerBitmap);
+
+                // Feedback haptique ou visuel
+                v.animate().scaleX(0.8f).scaleY(0.8f).setDuration(100)
+                        .withEndAction(() -> v.animate().scaleX(1f).scaleY(1f).start()).start();
             });
+
             binding.stickerContainer.addView(iv);
         }
     }
+
 
     private void saveImageLocally() {
         Bitmap editedBitmap = binding.photoEditorView.getFinalBitmap();
