@@ -54,7 +54,7 @@ public class AccountFragment extends Fragment {
 
         binding.btnLogout.setOnClickListener(v -> logout());
         binding.btnEditProfile.setOnClickListener(v -> {
-            // Logique pour modifier le profil (à implémenter plus tard)
+            Navigation.findNavController(v).navigate(R.id.action_accountFragment_to_editProfileFragment);
         });
     }
 
@@ -130,7 +130,7 @@ public class AccountFragment extends Fragment {
         
         binding.tvEmail.setText(user.getEmail());
         binding.tvAddress.setText(user.getAdresse() != null ? user.getAdresse() : "Adresse non renseignée");
-        binding.tvPhone.setText(user.getTelephone() != null ? user.getTelephone() : "Non renseigné");
+        binding.tvPhone.setText(user.getTelephone() != null ? user.getTelephone() : "Téléphone non renseigné");
         
         binding.tvStatPoints.setText(String.valueOf(user.getPoints()));
         

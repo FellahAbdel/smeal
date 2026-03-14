@@ -2,6 +2,10 @@ package fr.smeal.data.service;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import fr.smeal.data.model.Utilisateur;
 import fr.smeal.data.repository.UtilisateurRepository;
 
@@ -14,7 +18,7 @@ public class UtilisateurService {
         this.repository = new UtilisateurRepository();
     }
 
-    // Exemple de logique métier : Création de profil
+    // Création de profil
     public Task<Void> creerProfilUtilisateur(String uid, Utilisateur utilisateur) {
         // 1. Validation des données (Règle métier)
         if (utilisateur == null) {
@@ -28,7 +32,25 @@ public class UtilisateurService {
         return repository.saveUtilisateur(uid, utilisateur);
     }
 
-    // Exemple de logique métier : Récupération de profil
+    public Task<Void> updateProfil(String uid, String nom, String prenom, String adresse, String telephone, String email) {
+        // 1. Validation métier simple
+        if (uid == null || uid.isEmpty()) {
+            throw new IllegalArgumentException("ID utilisateur invalide");
+        }
+
+        // 2. Préparation de la Map des changements
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("nom", nom);
+        updates.put("prenom", prenom);
+        updates.put("adresse", adresse);
+        updates.put("telephone", telephone);
+        updates.put("email", email);
+
+        // 3. Appel au repository
+        return repository.updateUtilisateur(uid, updates);
+    }
+
+    // Récupération de profil
     public Task<Utilisateur> getProfilUtilisateur(String uid) {
         // On récupère le Snapshot du repository et on le transforme en Objet Utilisateur
         // pour que la Vue (Activity) ne manipule que des objets propres, pas des Snapshots.

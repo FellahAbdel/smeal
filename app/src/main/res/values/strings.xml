@@ -13,4 +13,11 @@
     <string name="adresse">Adresse</string>
     <string name="nom_d_utilisateur">Nom d\'utilisateur</string>
     <string name="s_inscrire">S\'inscrire</string>
+    <string name="modifier_mon_profil">Modifier mon profil</string>
+    <string name="pr_nom">Prénom</string>
+    <string name="nom">Nom</string>
+    <string name="enregistrer_les_modifications">Enregistrer les modifications</string>
+    <string name="adress">Adresse</string>
+    <string name="telephone">Telephone</string>
+    <string name="mail">Email</string>
 </resources>

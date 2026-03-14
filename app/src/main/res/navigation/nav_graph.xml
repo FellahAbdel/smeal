@@ -48,7 +48,15 @@
         android:id="@+id/accountFragment"
         android:name="fr.smeal.ui.account.AccountFragment"
         android:label="Mon Compte"
-        tools:layout="@layout/fragment_account" />
+        tools:layout="@layout/fragment_account" >
+        <action
+            android:id="@+id/action_accountFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="fr.smeal.ui.account.EditProfileFragment" />
 
     <fragment
         android:id="@+id/detailsFragment"
