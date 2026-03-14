@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -72,6 +73,9 @@ public class DetailsFragment extends Fragment {
     private FirebaseAuth mAuth;
     private UtilisateurService utilisateurService;
     private Utilisateur currentUserProfile;
+    private String tempAvisTitre = "";
+    private String tempAvisDesc = "";
+    private int tempAvisNote = 0;
 
     private static class LocalPhoto {
         android.net.Uri uri;
@@ -276,6 +280,11 @@ public class DetailsFragment extends Fragment {
         DialogAddAvisBinding dialogBinding = DialogAddAvisBinding.inflate(getLayoutInflater());
         dialog.setContentView(dialogBinding.getRoot());
 
+        // Restauration des valeurs si elles existent (depuis les variables tempAvisTitre, etc.)
+        dialogBinding.etTitreAvis.setText(tempAvisTitre);
+        dialogBinding.etDescAvis.setText(tempAvisDesc);
+        dialogBinding.rbAvis.setRating(tempAvisNote);
+
         if (!sessionPhotos.isEmpty()) {
             dialogBinding.cardAvisPhoto.setVisibility(View.VISIBLE);
             Glide.with(this).load(sessionPhotos.get(sessionPhotos.size() - 1).uri).into(dialogBinding.ivAvisPhoto);
@@ -283,13 +292,18 @@ public class DetailsFragment extends Fragment {
         }
 
         dialogBinding.btnAddPhoto.setOnClickListener(v -> {
+            // Sauvegarde de l'état actuel des champs
+            tempAvisTitre = Objects.requireNonNull(dialogBinding.etTitreAvis.getText()).toString();
+            tempAvisDesc = Objects.requireNonNull(dialogBinding.etDescAvis.getText()).toString();
+            tempAvisNote = (int) dialogBinding.rbAvis.getRating();
+
             dialog.dismiss();
             Navigation.findNavController(requireView()).navigate(R.id.action_detailsFragment_to_cameraFragment);
         });
 
         dialogBinding.btnSubmitAvis.setOnClickListener(v -> {
-            String titre = dialogBinding.etTitreAvis.getText().toString().trim();
-            String desc = dialogBinding.etDescAvis.getText().toString().trim();
+            String titre = Objects.requireNonNull(dialogBinding.etTitreAvis.getText()).toString().trim();
+            String desc = Objects.requireNonNull(dialogBinding.etDescAvis.getText()).toString().trim();
             int note = (int) dialogBinding.rbAvis.getRating();
 
             if (titre.isEmpty() || desc.isEmpty() || note == 0) {
@@ -453,6 +467,12 @@ public class DetailsFragment extends Fragment {
             @Override
             public void onSuccess(Void result) {
                 Toast.makeText(getContext(), "Avis publié avec succès !", Toast.LENGTH_SHORT).show();
+
+                // Réinitialisation du brouillon
+                tempAvisTitre = "";
+                tempAvisDesc = "";
+                tempAvisNote = 0;
+
                 sessionPhotos.clear();
                 dialog.dismiss();
                 viewModel.loadAvis(currentRestaurantId);
