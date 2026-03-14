@@ -14,8 +14,8 @@ public class Restaurant {
     private String imageUrl;
     private double latitude;
     private double longitude;
-    private String cuisineType; // Nouveau champ
-    private double rating;      // Note moyenne
+    private String cuisineType;
+    private double rating;
 
     public Restaurant() { }
 
