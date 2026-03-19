@@ -4,6 +4,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
+
 import fr.smeal.data.model.Utilisateur;
 
 public class UtilisateurRepository {
@@ -22,6 +25,11 @@ public class UtilisateurRepository {
     // READ
     public Task<DocumentSnapshot> getUtilisateur(String uid) {
         return collectionRef.document(uid).get();
+    }
+
+    // UPDATE partiel
+    public Task<Void> updateUtilisateur(String uid, Map<String, Object> updates) {
+        return collectionRef.document(uid).update(updates);
     }
 
     // DELETE

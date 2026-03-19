@@ -1,26 +1,35 @@
 package fr.smeal.data.model;
 
-import com.google.firebase.firestore.DocumentId;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
+@IgnoreExtraProperties
 public class Restaurant {
-    @DocumentId
+
+    @Exclude
     private String id;
+
     private String nom;
     private String adresse;
     private String imageUrl;
-    // Ajoute d'autres champs selon tes besoins (lat, lng, description...)
+    private double latitude;
+    private double longitude;
+    private String cuisineType;
+    private double rating;
 
-    // ⚠️ OBLIGATOIRE pour Firebase (Constructeur vide)
     public Restaurant() { }
 
-    public Restaurant(String id, String nom, String adresse, String imageUrl) {
-        this.id = id;
+    public Restaurant(String nom, String adresse, String imageUrl, double latitude, double longitude, String cuisineType, double rating) {
         this.nom = nom;
         this.adresse = adresse;
         this.imageUrl = imageUrl;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.cuisineType = cuisineType;
+        this.rating = rating;
     }
 
-    // Getters et Setters (OBLIGATOIRES pour que Firebase puisse lire/écrire)
+    @Exclude
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -32,4 +41,16 @@ public class Restaurant {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public double getLatitude() { return latitude; }
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+
+    public double getLongitude() { return longitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
+
+    public String getCuisineType() { return cuisineType; }
+    public void setCuisineType(String cuisineType) { this.cuisineType = cuisineType; }
+
+    public double getRating() { return rating; }
+    public void setRating(double rating) { this.rating = rating; }
 }

@@ -4,6 +4,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import fr.smeal.data.model.Avis;
 import fr.smeal.data.model.Utilisateur;
@@ -25,6 +26,10 @@ public class AvisRepository {
     // READ
     public Task<DocumentSnapshot> getAvis(String uid) {
         return collectionRef.document(uid).get();
+    }
+
+    public Task<QuerySnapshot> getAvisByUser(String userId) {
+        return collectionRef.whereEqualTo("idUtilisateur", userId).get();
     }
 
     // DELETE

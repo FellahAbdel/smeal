@@ -2,6 +2,10 @@ package fr.smeal.data.service;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.smeal.data.model.Reservation;
 import fr.smeal.data.repository.ReservationRepository;
@@ -23,6 +27,18 @@ public class ReservationService {
         }
 
         return repository.saveReservation(uid, reservation);
+    }
+
+    public Task<List<Reservation>> getReservationsByUser(String userId) {
+        return repository.getReservationsByUser(userId).continueWith(task -> {
+            List<Reservation> reservations = new ArrayList<>();
+            if (task.isSuccessful() && task.getResult() != null) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    reservations.add(document.toObject(Reservation.class));
+                }
+            }
+            return reservations;
+        });
     }
 
     public Task<Reservation> getMenuRestaurant(String uid) {

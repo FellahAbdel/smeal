@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/glass_background"
+    android:elevation="6dp"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvUserAvis"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Smeal.Headline"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toStartOf="@id/tvNoteAvis"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Alice Dupont" />
+
+    <TextView
+        android:id="@+id/tvNoteAvis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/glass_chip_background"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textColor="@color/liquid_primary"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:drawableStart="@drawable/ic_star"
+        android:drawablePadding="4dp"
+        app:layout_constraintBottom_toBottomOf="@id/tvUserAvis"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvUserAvis"
+        app:drawableTint="@color/liquid_primary"
+        tools:text="5" />
+
+    <TextView
+        android:id="@+id/tvTitreAvis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textSize="13sp"
+        android:textStyle="italic"
+        app:layout_constraintTop_toBottomOf="@id/tvUserAvis"
+        tools:text="Excellente expérience !" />
+
+    <TextView
+        android:id="@+id/tvDescriptionAvis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.Smeal.Body"
+        android:textSize="13sp"
+        app:layout_constraintTop_toBottomOf="@id/tvTitreAvis"
+        tools:text="Le cadre est magnifique et la nourriture est délicieuse." />
+
+    <!-- RecyclerView horizontal pour les photos de l'avis -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvAvisPhotos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/tvDescriptionAvis"
+        tools:listitem="@layout/item_avis_photo"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

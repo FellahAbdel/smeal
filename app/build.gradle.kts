@@ -1,7 +1,8 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
-    // RETIRER LE "apply false" ICI car on veut l'activer dans l'app
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
@@ -12,16 +13,33 @@ android {
     defaultConfig {
         applicationId = "fr.smeal"
         minSdk = 26 // CameraX demande souvent min 21, 24 est safe
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Chargement des propriétés depuis local.properties
+        val keystoreFile = project.rootProject.file("local.properties")
+        val properties = Properties()
+        if (keystoreFile.exists()) {
+            properties.load(keystoreFile.inputStream())
+        }
+
+        // Récupération de la clé API
+        val apiKey = properties.getProperty("API_KEY") ?: ""
+
+        // Injection pour le code Java (BuildConfig.API_KEY)
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
+        
+        // Injection pour le Manifest (${API_KEY})
+        manifestPlaceholders["API_KEY"] = apiKey
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -29,13 +47,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8 // CameraX préfère Java 8
+        sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    // AJOUT IMPORTANT POUR LE PROJET
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -45,6 +63,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.shimmer)
+    implementation(libs.lottie)
 
     // --- Navigation ---
     implementation(libs.navigation.fragment)
@@ -59,6 +79,7 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.auth)
 
     // --- CameraX ---
     implementation(libs.camera.core)
@@ -72,9 +93,7 @@ dependencies {
 
     // --- Glide (Images) ---
     implementation(libs.glide)
-    annotationProcessor(libs.glide.compiler) // "annotationProcessor" car Java
-
-    // --- Tests ---
+    annotationProcessor(libs.glide.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
